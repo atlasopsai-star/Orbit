@@ -37,7 +37,7 @@ Orbit uses its own XDG namespace and will not overwrite an existing Superfile co
 - macOS: the corresponding application-support `orbit` namespace from the XDG implementation
 - State, cache, and data paths use the corresponding `orbit` namespace.
 
-The default files include `config.toml`, `hotkeys.toml`, and theme files. Update checks are disabled by default until Orbit publishes releases.
+The default files include `config.toml`, `hotkeys.toml`, and theme files. Orbit ships with `Orbit Dark`, a deep-navy theme with gold focus states and cyan navigation accents. Update checks are disabled by default until Orbit publishes releases.
 
 ## Core controls
 

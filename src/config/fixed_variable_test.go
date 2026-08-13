@@ -19,6 +19,9 @@ func TestOrbitFoundationPaths(t *testing.T) {
 	if !strings.HasSuffix(LogFile, "/orbit/orbit.log") {
 		t.Errorf("log path = %q, want an Orbit log", LogFile)
 	}
+	if EmbedThemeOrbitDarkFile != "src/orbit_config/theme/orbit-dark.toml" {
+		t.Errorf("Orbit Dark theme path = %q", EmbedThemeOrbitDarkFile)
+	}
 	if EmbedConfigDir != "src/orbit_config" {
 		t.Errorf("embedded config dir = %q", EmbedConfigDir)
 	}

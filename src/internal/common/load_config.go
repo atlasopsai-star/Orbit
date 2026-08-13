@@ -272,7 +272,7 @@ func LoadConfigStringGlobals(content embed.FS) error {
 	}
 	ConfigTomlString = string(configData)
 
-	themeData, err := content.ReadFile(variable.EmbedThemeCatppuccinFile)
+	themeData, err := content.ReadFile(variable.EmbedThemeOrbitDarkFile)
 	if err != nil {
 		return err
 	}

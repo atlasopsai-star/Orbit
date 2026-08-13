@@ -30,6 +30,7 @@ const (
 	EmbedHotkeysFile         = EmbedConfigDir + "/hotkeys.toml"
 	EmbedThemeDir            = EmbedConfigDir + "/theme"
 	EmbedThemeCatppuccinFile = EmbedThemeDir + "/catppuccin-mocha.toml"
+	EmbedThemeOrbitDarkFile  = EmbedThemeDir + "/orbit-dark.toml"
 )
 
 var (

@@ -32,3 +32,4 @@
 - Orbit has no published release stream yet, so update checks are hard-gated off (including inherited configs).
 - No public release/Homebrew publication will be performed in this session.
 - Website documentation and legacy upstream automation are inventoried for a later docs/release milestone.
+- Added the Orbit Dark embedded default theme without changing the mature renderer or syntax highlighter.
