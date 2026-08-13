@@ -5,7 +5,7 @@ import "time"
 // These could as well be property of prompt Model vs being global consts
 // But its fine
 const (
-	promptHeadlineText = "superfile Prompt"
+	promptHeadlineText = "Orbit Prompt"
 
 	OpenCommand  = "open"
 	SplitCommand = "split"
@@ -19,7 +19,7 @@ const (
 	failureMessagePrefix = "Error"
 
 	shellModeString = "(Shell Mode)"
-	spfModeString   = "(SPF Mode)"
+	spfModeString   = "(Orbit Mode)"
 
 	// Error message string
 	tokenizationError    = "Failed during tokenization"

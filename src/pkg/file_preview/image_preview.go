@@ -11,8 +11,8 @@ import (
 
 	_ "golang.org/x/image/webp" // Register WebP decoder
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/pkg/cache"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/pkg/cache"
 )
 
 type ImageRenderer int

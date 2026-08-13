@@ -1,6 +1,6 @@
 package processbar
 
-import "github.com/yorukot/superfile/src/config/icon"
+import "github.com/atlasopsai-star/Orbit/src/config/icon"
 
 type OperationType int
 

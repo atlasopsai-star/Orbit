@@ -11,20 +11,20 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/notify"
-	"github.com/yorukot/superfile/src/internal/ui/processbar"
-	"github.com/yorukot/superfile/src/internal/ui/prompt"
-	"github.com/yorukot/superfile/src/internal/ui/sidebar"
-	"github.com/yorukot/superfile/src/internal/ui/sortmodel"
-	"github.com/yorukot/superfile/src/internal/ui/spferror"
-	zoxideui "github.com/yorukot/superfile/src/internal/ui/zoxide"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/prompt"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sidebar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/spferror"
+	zoxideui "github.com/atlasopsai-star/Orbit/src/internal/ui/zoxide"
 )
 
 /*

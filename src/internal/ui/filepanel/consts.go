@@ -3,7 +3,7 @@ package filepanel
 import (
 	"time"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 const (

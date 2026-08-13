@@ -7,8 +7,8 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 // The renderer for the mandatory first column in the file panel, with a name, a cursor, and a select option.

@@ -28,10 +28,10 @@ jobs:
 
       # timeout command just launches and kills spf, to create the config directories
       - name: Check installation
-        run: tmux -V; ls; pwd; ls bin/; bin/spf path-list; timeout 1s bin/spf
+        run: tmux -V; ls; pwd; ls bin/; bin/orbit path-list; timeout 1s bin/orbit
         continue-on-error: true
       - name: set debug
-        run: sed -i 's/debug = false/debug = true/g' /home/runner/.config/superfile/config.toml
+        run: sed -i 's/debug = false/debug = true/g' /home/runner/.config/orbit/config.toml
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -46,4 +46,4 @@ jobs:
       
       - name: Print logs
         if: always()
-        run: cat ~/.local/state/superfile/superfile.log
+        run: cat ~/.local/state/orbit/orbit.log

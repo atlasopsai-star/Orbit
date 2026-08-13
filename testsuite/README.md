@@ -60,7 +60,7 @@ python3 -m venv .venv
 ```
 # cd to the superfile repo root (parent of this)
 cd <superfile_root>
-go build -o bin/spf.exe
+go build -o bin/orbit.exe
 ```
 
 ### Running testsuite

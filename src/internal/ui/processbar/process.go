@@ -8,8 +8,8 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 // Model for an individual process

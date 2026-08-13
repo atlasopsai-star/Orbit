@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui"
 )
 
 // Model for process bar internal

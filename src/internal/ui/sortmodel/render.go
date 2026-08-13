@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 func (m *Model) Render() string {

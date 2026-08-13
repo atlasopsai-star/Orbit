@@ -1,8 +1,8 @@
 package filemodel
 
 import (
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
-	"github.com/yorukot/superfile/src/internal/ui/preview"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/preview"
 )
 
 // TODO: Make the fields unexported, as much as possible

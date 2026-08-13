@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/pkg/utils"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 )
 
 // #1497: opening a new panel while the sidebar (or process bar / metadata) was

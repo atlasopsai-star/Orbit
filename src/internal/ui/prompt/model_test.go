@@ -14,10 +14,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 // Initialize the globals we need for testing
@@ -125,7 +125,7 @@ func TestModel_HandleUpdate(t *testing.T) {
 		actualTest(tea.KeyPressMsg{Code: 'd', Mod: tea.ModCtrl}, true)
 	})
 
-	t.Run("Switching between shell and SPF mode", func(t *testing.T) {
+	t.Run("Switching between shell and Orbit mode", func(t *testing.T) {
 		actualTest := func(promptChar string, shellChar string) {
 			m := GenerateModel(promptChar, shellChar, true, defaultTestMaxHeight, defaultTestWidth)
 			m.Open(true)
@@ -280,18 +280,18 @@ func TestModel_Render(t *testing.T) {
 		m.setShellMode(true)
 		res := ansi.Strip(m.Render())
 		exp := "" +
-			"╭─┤ " + icon.Terminal + " superfile Prompt (Shell Mode) ├──╮\n" +
+			"╭─┤ " + icon.Terminal + " Orbit Prompt (Shell Mode) ├──────╮\n" +
 			// 23--------4------------56789012345678901234567890123456789
 			"│ :                                    │\n" +
 			// 23456789012345678901234567890123456789
 			"├──────────────────────────────────────┤\n" +
-			"│ '>' - Get into SPF mode              │\n" +
+			"│ '>' - Get into Orbit mode            │\n" +
 			"╰──────────────────────────────────────╯"
 		assert.Equal(t, exp, res)
 		m.setShellMode(false)
 		res = ansi.Strip(m.Render())
 		exp = "" +
-			"╭─┤ " + icon.Terminal + " superfile Prompt (SPF Mode) ├────╮\n" +
+			"╭─┤ " + icon.Terminal + " Orbit Prompt (Orbit Mode) ├──────╮\n" +
 			// 23--------4------------56789012345678901234567890123456789
 			"│ >                                    │\n" +
 			"├──────────────────────────────────────┤\n" +
@@ -335,12 +335,12 @@ func TestModel_Render(t *testing.T) {
 		m.HandleShellCommandResults(0, "")
 		res := ansi.Strip(m.Render())
 		exp := "" +
-			"╭─┤ " + icon.Terminal + " superfile Prompt (Shell Mode) ├────────────╮\n" +
+			"╭─┤ " + icon.Terminal + " Orbit Prompt (Shell Mode) ├────────────────╮\n" +
 			// 23--------4------------567890123456789012345678901234567890123456789
 			"│ :                                              │\n" +
 			// 234567890123456789012345678901234567890123456789
 			"├────────────────────────────────────────────────┤\n" +
-			"│ '>' - Get into SPF mode                        │\n" +
+			"│ '>' - Get into Orbit mode                      │\n" +
 			"├────────────────────────────────────────────────┤\n" +
 			"│ Success : Command exited with status 0 (No outp│\n" +
 			"╰────────────────────────────────────────────────╯"
@@ -348,12 +348,12 @@ func TestModel_Render(t *testing.T) {
 		m.HandleShellCommandResults(1, "")
 		res = ansi.Strip(m.Render())
 		exp = "" +
-			"╭─┤ " + icon.Terminal + " superfile Prompt (Shell Mode) ├────────────╮\n" +
+			"╭─┤ " + icon.Terminal + " Orbit Prompt (Shell Mode) ├────────────────╮\n" +
 			// 23--------4------------567890123456789012345678901234567890123456789
 			"│ :                                              │\n" +
 			// 234567890123456789012345678901234567890123456789
 			"├────────────────────────────────────────────────┤\n" +
-			"│ '>' - Get into SPF mode                        │\n" +
+			"│ '>' - Get into Orbit mode                      │\n" +
 			"├────────────────────────────────────────────────┤\n" +
 			"│ Error : Command exited with status 1 (No output│\n" +
 			"╰────────────────────────────────────────────────╯"

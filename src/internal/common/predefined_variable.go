@@ -6,7 +6,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
 )
 
 const (
@@ -128,7 +128,7 @@ func wrapFilePreviewErrorMsg(msg string) string {
 // This should be called after theme and icons are initialized.
 func LoadPrerenderedVariables() {
 	divider := " " + strings.Repeat("─", SidebarDividerLength)
-	SideBarSuperfileTitle = SidebarTitleStyle.Render(" " + icon.SuperfileIcon + icon.Space + "superfile")
+	SideBarSuperfileTitle = SidebarTitleStyle.Render(" " + icon.SuperfileIcon + icon.Space + "Orbit")
 	SideBarHomeDivider = SidebarTitleStyle.Render(icon.Home+icon.Space+"Home") + SidebarDividerStyle.Render(divider)
 	SideBarPinnedDivider = SidebarTitleStyle.Render(
 		icon.Pinned+icon.Space+"Pinned",

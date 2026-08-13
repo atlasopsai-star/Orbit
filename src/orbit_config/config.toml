@@ -4,8 +4,8 @@
 #                                            #
 ##############################################
 
-# This contains the root config file for superfile! More details can be found at
-# https://superfile.dev/configure/superfile-config/.
+# This contains the root config file for Orbit! More details can be found at
+# https://Orbit.dev/configure/Orbit-config/.
 
 ###############################################################################
 #                                   Defaults                                  #
@@ -20,10 +20,10 @@ editor = ""
 dir_editor = ""
 
 #-- Auto check for update
-auto_check_update = true
+auto_check_update = false
 
 #-- cd on quit
-# Should we cd the shell to the last directory open in superfile when the
+# Should we cd the shell to the last directory open in Orbit when the
 # program exits? 
 cd_on_quit = false
 
@@ -42,7 +42,7 @@ show_image_preview = true
 show_panel_footer_info = true
 
 #-- Default Directory
-# The initial path that the file panel should navigate to when superfile is
+# The initial path that the file panel should navigate to when Orbit is
 # opened. This setting understands relative paths such as ".", "..", etc.
 default_directory = "."
 
@@ -154,9 +154,9 @@ border_middle_right = '┤'
 #                                   Plugins                                   #
 ###############################################################################
 
-# This section is for using plugins with superfile, external addons that extend
+# This section is for using plugins with Orbit, external addons that extend
 # the default capabilities of the program! More info can be found at
-# https://superfile.dev/list/plugin-list/.
+# https://Orbit.dev/list/plugin-list/.
 
 #-- Detailed Metadata
 # Requires: exiftool

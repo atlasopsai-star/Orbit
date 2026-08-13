@@ -11,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/internal/trash"
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
-	"github.com/yorukot/superfile/src/internal/ui/spferror"
-	"github.com/yorukot/superfile/src/pkg/utils"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/internal/trash"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/spferror"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/notify"
-	"github.com/yorukot/superfile/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
 
 	tea "charm.land/bubbletea/v2"
 
@@ -241,7 +241,7 @@ func (m *model) getDeleteTriggerCmd(deletePermanent bool) tea.Cmd {
 	}
 }
 
-// Copy directory or file's path to superfile's clipboard
+// Copy directory or file's path to Orbit's clipboard
 // set cut to true/false accordingly
 func (m *model) copySingleItem(cut bool) {
 	panel := m.getFocusedFilePanel()

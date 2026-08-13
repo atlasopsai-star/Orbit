@@ -3,11 +3,11 @@ package main
 import (
 	"embed"
 
-	"github.com/yorukot/superfile/src/cmd"
+	"github.com/atlasopsai-star/Orbit/src/cmd"
 )
 
 var (
-	//go:embed src/superfile_config/*
+	//go:embed src/orbit_config/*
 	content embed.FS
 )
 

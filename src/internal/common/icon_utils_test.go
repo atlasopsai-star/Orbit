@@ -3,7 +3,7 @@ package common
 import (
 	"testing"
 
-	"github.com/yorukot/superfile/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
 )
 
 func TestGetElementIcon(t *testing.T) {
@@ -59,12 +59,12 @@ func TestGetElementIcon(t *testing.T) {
 			expected: icon.Folders[".git"],
 		},
 		{
-			name:     "superfile directory",
-			file:     "superfile",
+			name:     "Orbit directory",
+			file:     "Orbit",
 			isDir:    true,
 			isLink:   false,
 			nerdFont: true,
-			expected: icon.Folders["superfile"],
+			expected: icon.Folders["Orbit"],
 		},
 		{
 			name:     "package.json file",

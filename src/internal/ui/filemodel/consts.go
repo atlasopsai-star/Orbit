@@ -3,7 +3,7 @@ package filemodel
 import (
 	"errors"
 
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
 )
 
 // Now they are same doesn't means that they will be forever.

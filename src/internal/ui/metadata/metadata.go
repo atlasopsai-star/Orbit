@@ -9,9 +9,9 @@ import (
 
 	"github.com/barasher/go-exiftool"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 type Metadata struct {

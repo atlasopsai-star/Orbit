@@ -10,10 +10,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/internal/common"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 // Back to parent directory

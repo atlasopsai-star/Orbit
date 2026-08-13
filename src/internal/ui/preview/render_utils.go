@@ -10,7 +10,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 func getBatSyntaxHighlightedContent(

@@ -1,12 +1,12 @@
 [Desktop Entry]
-Name=spf
-GenericName=superfile
+Name=Orbit
+GenericName=Orbit terminal file manager
 Comment=fancy and modern terminal file manager
 Type=Application
 MimeType=inode/directory
-Icon=spf
+Icon=orbit
 Terminal=true
-TryExec=spf
-Exec=spf %u
+TryExec=orbit
+Exec=orbit %u
 Categories=Utility;System;FileTools;FileManager;Filesystem;ConsoleOnly
 Keywords=File;Manager;Explorer

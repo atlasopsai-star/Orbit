@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bash -euo pipefail
 
-projectName="superfile"
+projectName="orbit"
 version="v1.6.0"
 osList=("darwin" "linux" "windows")
 archList=("amd64" "arm64")
@@ -33,7 +33,7 @@ for os in "${osList[@]}"; do
             echo "$projectName-$os-$version-$arch"
             mkdir "./dist/$projectName-$os-$version-$arch"
             cd ../ || exit
-            build_binary "$os" "$arch" "./release/dist/$projectName-$os-$version-$arch/spf.exe"
+            build_binary "$os" "$arch" "./release/dist/$projectName-$os-$version-$arch/orbit.exe"
             cd ./release || exit
             zip -r "./dist/$projectName-$os-$version-$arch.zip" "./dist/$projectName-$os-$version-$arch"
         done
@@ -42,7 +42,7 @@ for os in "${osList[@]}"; do
             echo "$projectName-$os-$version-$arch"
             mkdir "./dist/$projectName-$os-$version-$arch"
             cd ../ || exit
-            build_binary "$os" "$arch" "./release/dist/$projectName-$os-$version-$arch/spf"
+            build_binary "$os" "$arch" "./release/dist/$projectName-$os-$version-$arch/orbit"
             cd ./release || exit
             tar czf "./dist/$projectName-$os-$version-$arch.tar.gz" "./dist/$projectName-$os-$version-$arch"
         done

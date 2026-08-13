@@ -2,8 +2,8 @@ function spf() {
     param (
         [string[]]$Params
     )
-    $spf_location = [Environment]::GetFolderPath("LocalApplicationData") + "\Programs\superfile\spf.exe"
-    $SPF_LAST_DIR_PATH = [Environment]::GetFolderPath("LocalApplicationData") + "\superfile\lastdir"
+    $spf_location = [Environment]::GetFolderPath("LocalApplicationData") + "\Programs\orbit\orbit.exe"
+    $SPF_LAST_DIR_PATH = [Environment]::GetFolderPath("LocalApplicationData") + "\orbit\lastdir"
 
     & $spf_location @Params
 

@@ -12,11 +12,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/notify"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
 )
 
 // TODO : Add test for model initialized with multiple directories

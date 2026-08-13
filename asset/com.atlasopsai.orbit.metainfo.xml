@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.yorukot.superfile</id>
+  <id>com.atlasopsai.orbit</id>
 
-  <name>superfile</name>
+  <name>Orbit</name>
   <summary>Pretty fancy and modern terminal file manager</summary>
 
   <metadata_license>CC0-1.0</metadata_license>
@@ -10,24 +10,24 @@
 
   <description>
     <p>
-      superfile is a fancy, modern terminal file manager built with Go and Bubble Tea.
+      Orbit is a fast, beautiful, keyboard-first terminal file manager built with Go and Bubble Tea.
       It combines a polished, multi-panel interface with the speed and power of terminal tools,
       making it easy to browse, preview, and manage files without leaving the command line.
     </p>
   </description>
 
-  <url type="homepage">https://superfile.dev/</url>
-  <url type="bugtracker">https://github.com/yorukot/superfile/issues</url>
-  <url type="vcs-browser">https://github.com/yorukot/superfile</url>
+  <url type="homepage">https://github.com/atlasopsai-star/Orbit</url>
+  <url type="bugtracker">https://github.com/atlasopsai-star/Orbit/issues</url>
+  <url type="vcs-browser">https://github.com/atlasopsai-star/Orbit</url>
 
-  <developer id="io.github.yorukot">
-    <name>yorukot</name>
+  <developer id="com.atlasopsai">
+    <name>Atlas Ops AI</name>
   </developer>
 
-  <launchable type="desktop-id">spf.desktop</launchable>
+  <launchable type="desktop-id">orbit.desktop</launchable>
 
   <provides>
-    <binary>spf</binary>
+    <binary>orbit</binary>
   </provides>
 
   <categories>
@@ -46,8 +46,8 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/yorukot/superfile/main/website/src/assets/demo.png</image>
-      <caption>superfile terminal file manager</caption>
+      <image>https://raw.githubusercontent.com/atlasopsai-star/Orbit/main/website/src/assets/demo.png</image>
+      <caption>Orbit terminal file manager</caption>
     </screenshot>
   </screenshots>
 </component>

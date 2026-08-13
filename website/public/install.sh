@@ -40,7 +40,7 @@ fi
 
 fetch_latest_version() {
     local response
-    if response=$(curl -s --max-time 5 "https://api.github.com/repos/yorukot/superfile/releases/latest"); then
+    if response=$(curl -s --max-time 5 "https://api.github.com/repos/atlasopsai-star/Orbit/releases/latest"); then
         local version
         version=$(echo "$response" | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
         if [ -n "$version" ]; then
@@ -82,7 +82,7 @@ fi
 
 file_name=${package}-${os}-v${version}-${arch}
 
-url="https://github.com/yorukot/superfile/releases/download/v${version}/${file_name}.tar.gz"
+url="https://github.com/atlasopsai-star/Orbit/releases/download/v${version}/${file_name}.tar.gz"
 
 if command -v curl &> /dev/null; then
     echo -e "${bright_yellow}Downloading ${cyan}${package} v${version} for ${os} (${arch})...${nc}"
@@ -97,12 +97,12 @@ tar -xzf "${file_name}.tar.gz"
 
 echo -e "${bright_yellow}Installing ${cyan}${package}...${nc}"
 cd ./dist/${file_name}
-chmod +x ./spf
+chmod +x ./orbit
 echo -e "${yellow}Press ctrl+C to not install as sudo and try locally.${nc}"
-if ! sudo mv ./spf /usr/local/bin/; then
+if ! sudo mv ./orbit /usr/local/bin/; then
   echo -e "${yellow}Unable to move binary to /usr/local/bin. Do you have sudo permissions?${nc}"
   mkdir -p ~/.local/bin
-  if ! mv ./spf ~/.local/bin/; then
+  if ! mv ./orbit ~/.local/bin/; then
     echo -e "${red}❌ Failed to install superfile: Unable to move to ~/.local/bin as well.${nc}"
   else
     if ! [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]; then

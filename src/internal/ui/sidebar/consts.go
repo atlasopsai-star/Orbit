@@ -1,7 +1,7 @@
 package sidebar
 
 import (
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 )
 
 // These are effectively consts
@@ -25,7 +25,7 @@ var defaultSectionSlice = []string{ //nolint: gochecknoglobals // This is more l
 	utils.SidebarSectionHome, utils.SidebarSectionPinned, utils.SidebarSectionDisks,
 }
 
-// superfile logo + blank line + search bar
+// Orbit logo + blank line + search bar
 const sideBarInitialHeight = 3
 
 // UI dimension constants for sidebar

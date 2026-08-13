@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/yorukot/superfile/src/internal/ui/sortmodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 )
 
 func TestGetSelectedLocationsSortedAsVisible(t *testing.T) {

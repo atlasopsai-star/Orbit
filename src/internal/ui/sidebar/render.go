@@ -3,11 +3,11 @@ package sidebar
 import (
 	"log/slog"
 
-	"github.com/yorukot/superfile/src/internal/ui"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/rendering"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/rendering"
 )
 
 // Render returns the rendered sidebar string.

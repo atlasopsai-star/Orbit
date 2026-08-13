@@ -46,26 +46,26 @@ XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 # Remove binary from /usr/local/bin
-if [ -f /usr/local/bin/spf ]; then
+if [ -f /usr/local/bin/orbit ]; then
     found=1
-    echo -e "${bright_yellow}Removing ${cyan}/usr/local/bin/spf${bright_yellow}...${nc}"
-    if ! sudo rm /usr/local/bin/spf; then
-        echo -e "${red}❌ Failed to remove ${white}/usr/local/bin/spf${red}. Do you have sudo permissions?${nc}"
+    echo -e "${bright_yellow}Removing ${cyan}/usr/local/bin/orbit${bright_yellow}...${nc}"
+    if ! sudo rm /usr/local/bin/orbit; then
+        echo -e "${red}❌ Failed to remove ${white}/usr/local/bin/orbit${red}. Do you have sudo permissions?${nc}"
         failed=1
     else
-        echo -e "${bright_green}✔ Removed ${white}/usr/local/bin/spf${nc}"
+        echo -e "${bright_green}✔ Removed ${white}/usr/local/bin/orbit${nc}"
     fi
 fi
 
 # Remove binary from ~/.local/bin
-if [ -f "$HOME/.local/bin/spf" ]; then
+if [ -f "$HOME/.local/bin/orbit" ]; then
     found=1
-    echo -e "${bright_yellow}Removing ${cyan}~/.local/bin/spf${bright_yellow}...${nc}"
-    if ! rm "$HOME/.local/bin/spf"; then
-        echo -e "${red}❌ Failed to remove ${white}~/.local/bin/spf${nc}"
+    echo -e "${bright_yellow}Removing ${cyan}~/.local/bin/orbit${bright_yellow}...${nc}"
+    if ! rm "$HOME/.local/bin/orbit"; then
+        echo -e "${red}❌ Failed to remove ${white}~/.local/bin/orbit${nc}"
         failed=1
     else
-        echo -e "${bright_green}✔ Removed ${white}~/.local/bin/spf${nc}"
+        echo -e "${bright_green}✔ Removed ${white}~/.local/bin/orbit${nc}"
     fi
 fi
 

@@ -5,23 +5,23 @@ import (
 
 	zoxidelib "github.com/lazysegtree/go-zoxide"
 
-	"github.com/yorukot/superfile/src/internal/ui/helpmenu"
-	"github.com/yorukot/superfile/src/internal/ui/spferror"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/helpmenu"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/spferror"
 
-	"github.com/yorukot/superfile/src/internal/ui/clipboard"
-	"github.com/yorukot/superfile/src/internal/ui/sortmodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/clipboard"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 
-	"github.com/yorukot/superfile/src/internal/ui/filemodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filemodel"
 
-	"github.com/yorukot/superfile/src/internal/ui/metadata"
-	"github.com/yorukot/superfile/src/internal/ui/notify"
-	"github.com/yorukot/superfile/src/internal/ui/processbar"
-	"github.com/yorukot/superfile/src/internal/ui/sidebar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sidebar"
 
 	"charm.land/bubbles/v2/textinput"
 
-	"github.com/yorukot/superfile/src/internal/ui/prompt"
-	zoxideui "github.com/yorukot/superfile/src/internal/ui/zoxide"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/prompt"
+	zoxideui "github.com/atlasopsai-star/Orbit/src/internal/ui/zoxide"
 )
 
 // Type representing the type of focused panel

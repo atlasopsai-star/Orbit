@@ -24,13 +24,13 @@ test related:
           - "**/*_test.go"
           - testsuite/**
           - .github/workflows/testsuite-run.yml
-          - .github/workflows/superfile-build-test.yml
+          - .github/workflows/orbit-build-test.yml
 
 theme:
   - changed-files:
       - any-glob-to-any-file:
           - asset/theme/**
-          - src/superfile_config/theme/**
+          - src/orbit_config/theme/**
 
 website:
   - changed-files:
@@ -41,13 +41,13 @@ new config:
   - changed-files:
       - any-glob-to-any-file:
           - src/config/**
-          - src/superfile_config/config.toml
+          - src/orbit_config/config.toml
 
 new hotkeys:
   - changed-files:
       - any-glob-to-any-file:
-          - src/superfile_config/hotkeys.toml
-          - src/superfile_config/vimHotkeys.toml
+          - src/orbit_config/hotkeys.toml
+          - src/orbit_config/vimHotkeys.toml
 
 packaging:
   - changed-files:
@@ -58,8 +58,8 @@ packaging:
           - flake.lock
           - gomod2nix.toml
           - release/**
-          - asset/spf.desktop
-          - asset/spf.svg
+          - asset/orbit.desktop
+          - asset/orbit.svg
           - asset/*.metainfo.xml
           - .github/workflows/update-gomod2nix.yml
           - .github/workflows/winget.yml

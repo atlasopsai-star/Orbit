@@ -8,9 +8,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
-	"github.com/yorukot/superfile/src/internal/ui/processbar"
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 )
 
 // Cancel typing modal e.g. create file or directory

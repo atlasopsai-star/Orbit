@@ -9,8 +9,8 @@ import (
 	tea "charm.land/bubbletea/v2"
 	zoxidelib "github.com/lazysegtree/go-zoxide"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 func DefaultModel(maxHeight int, width int, zClient *zoxidelib.Client) Model {

@@ -424,5 +424,5 @@ var Folders = map[string]Style{
 	"node_modules": {Icon: "\ue5fa", Color: "#cb3837"}, // Node modules folder - Red // Printable Rune : ""
 	"link_folder":  {Icon: "\uf482", Color: "NONE"},    // link folder - None // Printable Rune : ""
 
-	"superfile": {Icon: "\U000f069d", Color: "#FF6F00"}, // Printable Rune : "󰚝"
+	"Orbit": {Icon: "\U000f069d", Color: "#FF6F00"}, // Printable Rune : "󰚝"
 }

@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 )
 
 // Return help menu for Hotkeys
@@ -16,7 +16,7 @@ func getData() []hotkeydata { //nolint: funlen // This should be self contained
 		},
 		{
 			hotkey:         []string{"spf", ""},
-			description:    "Open superfile",
+			description:    "Open Orbit",
 			hotkeyWorkType: globalType,
 		},
 		{
@@ -26,12 +26,12 @@ func getData() []hotkeydata { //nolint: funlen // This should be self contained
 		},
 		{
 			hotkey:         common.Hotkeys.Quit,
-			description:    "Quit typing, modal or superfile",
+			description:    "Quit typing, modal or Orbit",
 			hotkeyWorkType: globalType,
 		},
 		{
 			hotkey:         common.Hotkeys.CdQuit,
-			description:    "Quit superfile and change directory to current folder",
+			description:    "Quit Orbit and change directory to current folder",
 			hotkeyWorkType: globalType,
 		},
 		{

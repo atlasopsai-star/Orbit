@@ -23,7 +23,7 @@ Write-Host ""
 
 function Get-LatestVersion {
     try {
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/yorukot/superfile/releases/latest" -TimeoutSec 5
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/atlasopsai-star/Orbit/releases/latest" -TimeoutSec 5
         $version = $release.tag_name -replace '^v', ''
         if ([string]::IsNullOrEmpty($version)) {
             Write-Host "Failed to parse version from GitHub API"
@@ -36,7 +36,7 @@ function Get-LatestVersion {
     }
 }
 
-$package = "superfile"
+$package = "orbit"
 $version = if ($env:SPF_INSTALL_VERSION) { $env:SPF_INSTALL_VERSION } else { Get-LatestVersion }
 
 $installInstructions = @'
@@ -48,7 +48,7 @@ if ($IsMacOS) {
     Write-Host @"
 $installInstructions
 
-https://github.com/yorukot/superfile?tab=readme-ov-file#installation
+https://github.com/atlasopsai-star/Orbit?tab=readme-ov-file#installation
 "@
     exit
 }
@@ -56,7 +56,7 @@ if ($IsLinux) {
     Write-Host @"
 $installInstructions
 
-https://github.com/yorukot/superfile?tab=readme-ov-file#installation
+https://github.com/atlasopsai-star/Orbit?tab=readme-ov-file#installation
 "@
     exit
 }
@@ -84,7 +84,7 @@ $ProgressPreference = 'SilentlyContinue' #speeds up Download massively, but does
 Write-Host "Checking for superfile installation..."
 
 $superfileProgramPath = [Environment]::GetFolderPath("LocalApplicationData") + "\Programs\superfile"
-$superfileExePath = $superfileProgramPath + "\spf.exe"
+$superfileExePath = $superfileProgramPath + "\orbit.exe"
 
 if (-not (Test-Path $superfileProgramPath)) {
     New-Item -Path $superfileProgramPath -ItemType Directory -Verbose:$false | Out-Null
@@ -128,7 +128,7 @@ if (-not (Test-Path $superfileProgramPath)) {
 
 Write-Host "Downloading superfile...(Version v$version)"
 
-$url = "https://github.com/yorukot/superfile/releases/download/v$version/$filename"
+$url = "https://github.com/atlasopsai-star/Orbit/releases/download/v$version/$filename"
 try {
     Invoke-WebRequest -OutFile "$superfileProgramPath/$filename" $url
 } catch {

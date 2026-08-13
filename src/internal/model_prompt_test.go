@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/prompt"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/prompt"
 )
 
 func TestModel_Update_Prompt(t *testing.T) {
@@ -369,7 +369,7 @@ func testDirectoryHandlingWithQuotes(t *testing.T, curTestDir, dir1 string) {
 			assert.True(
 				t,
 				m.promptModal.LastActionSucceeded(),
-				"cd with single quoted env var works in superfile (unlike bash)",
+				"cd with single quoted env var works in Orbit (unlike bash)",
 			)
 			assert.Equal(t, xdg.Home, m.getFocusedFilePanel().Location)
 		})

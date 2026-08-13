@@ -73,7 +73,7 @@ func detectBinaryFormat(filePath string) binaryFormat {
 	}
 }
 
-// isCOFFMachine reports whether m is a COFF machine type superfile can display.
+// isCOFFMachine reports whether m is a COFF machine type Orbit can display.
 func isCOFFMachine(m uint16) bool {
 	switch m {
 	case pe.IMAGE_FILE_MACHINE_I386, pe.IMAGE_FILE_MACHINE_AMD64,

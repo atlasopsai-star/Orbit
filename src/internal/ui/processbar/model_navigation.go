@@ -1,7 +1,7 @@
 package processbar
 
 import (
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 // Control processbar panel list up

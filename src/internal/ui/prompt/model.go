@@ -6,12 +6,12 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yorukot/superfile/src/internal/ui"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui"
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 func DefaultModel(maxHeight int, width int) Model {
@@ -152,7 +152,7 @@ func (m *Model) Render() string {
 		}
 	} else if m.textInput.Value() == "" {
 		r.AddSection()
-		r.AddLines(" '" + m.spfPromptHotkey + "' - Get into SPF mode")
+		r.AddLines(" '" + m.spfPromptHotkey + "' - Get into Orbit mode")
 	}
 
 	if m.resultMsg != "" {

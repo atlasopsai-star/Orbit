@@ -11,19 +11,19 @@ import (
 	"os"
 	"time"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/urfave/cli/v3"
 	"golang.org/x/mod/semver"
 
-	variable "github.com/yorukot/superfile/src/config"
-	internal "github.com/yorukot/superfile/src/internal"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	internal "github.com/atlasopsai-star/Orbit/src/internal"
 )
 
-// Run superfile app
+// Run Orbit app
 func Run(content embed.FS) {
 	// Enable custom colored help output
 	cli.HelpPrinter = CustomHelpPrinter //nolint:reassign // Intentionally reassigning to customize help output
@@ -35,9 +35,9 @@ func Run(content embed.FS) {
 	common.LoadAllDefaultConfig(content)
 
 	app := &cli.Command{
-		Name:        "superfile",
+		Name:        "orbit",
 		Version:     variable.CurrentVersion + variable.PreReleaseSuffix,
-		Description: "Pretty fancy and modern terminal file manager ",
+		Description: "A fast, beautiful, keyboard-first terminal file manager for Mac developers",
 		ArgsUsage:   "[PATH]...",
 		Commands: []*cli.Command{
 			{
@@ -120,7 +120,7 @@ func Run(content embed.FS) {
 			&cli.StringFlag{
 				Name:    "chooser-file",
 				Aliases: []string{"cf"},
-				Usage:   "On trying to open any file, superfile will write to its path to this file, and exit",
+				Usage:   "On trying to open any file, Orbit will write to its path to this file, and exit",
 				Value:   "", // Default to the blank string indicating non-usage of flag
 			},
 		},
@@ -140,7 +140,7 @@ func spfAppAction(_ context.Context, c *cli.Command) error {
 		printDebugInfo()
 		return nil
 	}
-	// If no args are called along with "spf" use current dir
+	// If no args are called along with "orbit" use current dir
 	firstPanelPaths := []string{""}
 	if c.Args().Present() {
 		firstPanelPaths = c.Args().Slice()
@@ -236,7 +236,7 @@ func writeLastCheckTime(t time.Time) {
 // that version is checked or if has more than 24h since the last version check,
 // look into the repo if  there's any more recent version
 func CheckForUpdates() {
-	if !common.Config.AutoCheckUpdate {
+	if !common.Config.AutoCheckUpdate || !variable.OrbitReleasesAvailable {
 		return
 	}
 

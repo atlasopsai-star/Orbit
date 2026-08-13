@@ -3,9 +3,9 @@ package preview
 import (
 	"log/slog"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 
-	filepreview "github.com/yorukot/superfile/src/pkg/file_preview"
+	filepreview "github.com/atlasopsai-star/Orbit/src/pkg/file_preview"
 )
 
 type Model struct {

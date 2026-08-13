@@ -6,7 +6,7 @@ import (
 
 	"github.com/adrg/xdg"
 
-	"github.com/yorukot/superfile/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
 )
 
 func getFileIcon(file string, isLink bool) icon.Style {

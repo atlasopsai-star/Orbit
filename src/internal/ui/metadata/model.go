@@ -3,9 +3,9 @@ package metadata
 import (
 	"fmt"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui"
-	"github.com/yorukot/superfile/src/pkg/cache"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui"
+	"github.com/atlasopsai-star/Orbit/src/pkg/cache"
 )
 
 type Model struct {

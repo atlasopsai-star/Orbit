@@ -3,7 +3,7 @@ package sidebar
 import (
 	"log/slog"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 )
 
 // isDivider returns true if the directory is one of the section dividers.

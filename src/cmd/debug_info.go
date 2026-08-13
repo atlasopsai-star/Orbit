@@ -10,9 +10,9 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	variable "github.com/yorukot/superfile/src/config"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
 )
 
 const (
@@ -40,7 +40,7 @@ func printDebugInfo() {
 	dp := newDebugPrinter()
 
 	fmt.Println()
-	dp.printHeader("Superfile")
+	dp.printHeader("Orbit")
 	dp.printKeyValue("Version", variable.CurrentVersion+variable.PreReleaseSuffix)
 
 	fmt.Println()

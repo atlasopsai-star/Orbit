@@ -10,23 +10,23 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/barasher/go-exiftool"
 
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
-	"github.com/yorukot/superfile/src/internal/ui/metadata"
-	"github.com/yorukot/superfile/src/internal/ui/notify"
-	"github.com/yorukot/superfile/src/internal/ui/preview"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/preview"
 
-	variable "github.com/yorukot/superfile/src/config"
-	zoxideui "github.com/yorukot/superfile/src/internal/ui/zoxide"
-	stringfunction "github.com/yorukot/superfile/src/pkg/string_function"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	zoxideui "github.com/atlasopsai-star/Orbit/src/internal/ui/zoxide"
+	stringfunction "github.com/atlasopsai-star/Orbit/src/pkg/string_function"
 )
 
 // These represent model's state information, its not a global preperty
@@ -491,7 +491,7 @@ func (m *model) trackDirectoryWithZoxide(path string) {
 
 // Triggers a warn for confirm quiting
 func (m *model) warnModalForQuit() {
-	m.notifyModel = notify.New(true, "Confirm to quit superfile",
+	m.notifyModel = notify.New(true, "Confirm to quit Orbit",
 		"You still have files being processed. Are you sure you want to exit?",
 		notify.QuitAction)
 }
@@ -508,7 +508,7 @@ func (m *model) View() tea.View {
 	v := tea.NewView(m.viewContent())
 	v.AltScreen = true
 	v.MouseMode = tea.MouseModeCellMotion
-	v.WindowTitle = "superfile"
+	v.WindowTitle = "Orbit"
 	return v
 }
 
@@ -611,7 +611,7 @@ func (m *model) mainComponentsRender() string {
 	return lipgloss.JoinVertical(0, mainPanel, footer)
 }
 
-// Close superfile application. Cd into the current dir if CdOnQuit on and save
+// Close Orbit application. Cd into the current dir if CdOnQuit on and save
 // the path in state direcotory
 func (m *model) quitSuperfile(cdOnQuit bool) {
 	// Resource cleanup
@@ -633,7 +633,7 @@ func (m *model) quitSuperfile(cdOnQuit bool) {
 		}
 	}
 	m.modelQuitState = quitDone
-	slog.Debug("Quitting superfile", "current dir", currentDir)
+	slog.Debug("Quitting Orbit", "current dir", currentDir)
 }
 
 // thread safe. returns current ioReqCnt and increments it.

@@ -8,7 +8,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
 )
 
 func ModalBorderStyle(height int, width int) lipgloss.Style {
@@ -28,7 +28,7 @@ func modalBorderStyleWithAlign(height int, width int, horizontalAlignment lipglo
 		Foreground(ModalFGColor)
 }
 
-// Generate first use modal style (This modal pop up when user first use superfile)
+// Generate first use modal style (This modal pop up when user first use Orbit)
 func FirstUseModal(height int, width int) lipgloss.Style {
 	border := GenerateBorder()
 	return lipgloss.NewStyle().Height(height).

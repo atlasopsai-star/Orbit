@@ -115,7 +115,7 @@ trap cleanup_venv EXIT INT TERM
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
-    echo "A comprehensive script for formatting, testing, and building superfile"
+    echo "A comprehensive script for formatting, testing, and building Orbit"
     echo ""
     echo "OPTIONS:"
     echo "  -t, --testsuite     Run integration testsuite after unit tests"
@@ -130,7 +130,7 @@ usage() {
     echo "  3. Run golangci-lint"
     echo "  4. Run unit tests (unless --skip-tests)"
     echo "  5. Run integration testsuite (if --testsuite)"
-    echo "  6. Build spf binary"
+    echo "  6. Build Orbit binary"
 }
 
 # Parse command line arguments
@@ -170,7 +170,7 @@ if [ "$VERBOSE" = true ]; then
     VERBOSE_FLAG="-v"
 fi
 
-printf "${BLUE}🚀 Starting superfile development workflow${NC}\n"
+printf "${BLUE}🚀 Starting Orbit development workflow${NC}\n"
 echo ""
 
 # Step 1: Tidy up the go mod
@@ -294,11 +294,11 @@ if [ "$RUN_TESTSUITE" = true ]; then
 fi
 
 # Step 6: Build the app
-print_step "Building spf binary..."
+print_step "Building Orbit binary..."
 if [ "$(go env GOOS)" = "darwin" ]; then
-    BUILD_CMD=(env CGO_ENABLED=1 go build -o ./bin/spf)
+    BUILD_CMD=(env CGO_ENABLED=1 go build -o ./bin/orbit)
 else
-    BUILD_CMD=(env CGO_ENABLED=0 go build -o ./bin/spf)
+    BUILD_CMD=(env CGO_ENABLED=0 go build -o ./bin/orbit)
 fi
 if "${BUILD_CMD[@]}"; then
     print_success "Build completed successfully"
@@ -309,10 +309,10 @@ fi
 
 echo ""
 printf "${GREEN}🎉 All steps completed successfully!${NC}\n"
-printf "${BLUE}Binary location:${NC} ./bin/spf\n"
+printf "${BLUE}Binary location:${NC} ./bin/orbit\n"
 
 # Show binary info
-if [ -f "./bin/spf" ]; then
-    BINARY_SIZE=$(du -h ./bin/spf | cut -f1)
+if [ -f "./bin/orbit" ]; then
+    BINARY_SIZE=$(du -h ./bin/orbit | cut -f1)
     printf "${BLUE}Binary size:${NC} $BINARY_SIZE\n"
 fi

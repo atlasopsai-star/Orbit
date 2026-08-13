@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/yorukot/superfile/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
 )
 
 func TestGetDisplayName(t *testing.T) {

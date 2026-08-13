@@ -6,7 +6,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
 	"github.com/adrg/xdg"
 )
@@ -16,13 +16,16 @@ const (
 	// Allowing pre-releases with non production version
 	// Set this to "" for production releases
 	PreReleaseSuffix = ""
+	// OrbitReleasesAvailable stays false until the first Orbit release is published.
+	// This prevents inherited configurations from contacting a non-existent release stream.
+	OrbitReleasesAvailable = false
 
 	// This gives most recent non-prerelease, non-draft release
-	LatestVersionURL    = "https://api.github.com/repos/yorukot/superfile/releases/latest"
-	LatestVersionGithub = "github.com/yorukot/superfile/releases/latest"
+	LatestVersionURL    = "https://api.github.com/repos/atlasopsai-star/Orbit/releases/latest"
+	LatestVersionGithub = "https://github.com/atlasopsai-star/Orbit/releases/latest"
 
 	// This will not break in windows. This is a relative path for Embed FS. It uses "/" only
-	EmbedConfigDir           = "src/superfile_config"
+	EmbedConfigDir           = "src/orbit_config"
 	EmbedConfigFile          = EmbedConfigDir + "/config.toml"
 	EmbedHotkeysFile         = EmbedConfigDir + "/hotkeys.toml"
 	EmbedThemeDir            = EmbedConfigDir + "/theme"
@@ -31,10 +34,10 @@ const (
 
 var (
 	HomeDir           = xdg.Home
-	SuperFileMainDir  = filepath.Join(xdg.ConfigHome, "superfile")
-	SuperFileCacheDir = filepath.Join(xdg.CacheHome, "superfile")
-	SuperFileDataDir  = filepath.Join(xdg.DataHome, "superfile")
-	SuperFileStateDir = filepath.Join(xdg.StateHome, "superfile")
+	SuperFileMainDir  = filepath.Join(xdg.ConfigHome, "orbit")
+	SuperFileCacheDir = filepath.Join(xdg.CacheHome, "orbit")
+	SuperFileDataDir  = filepath.Join(xdg.DataHome, "orbit")
+	SuperFileStateDir = filepath.Join(xdg.StateHome, "orbit")
 
 	// MainDir files
 	ThemeFolder = filepath.Join(SuperFileMainDir, "theme")
@@ -48,7 +51,7 @@ var (
 	ToggleFooter     = filepath.Join(SuperFileDataDir, "toggleFooter")
 
 	// StateDir files
-	LogFile     = filepath.Join(SuperFileStateDir, "superfile.log")
+	LogFile     = filepath.Join(SuperFileStateDir, "orbit.log")
 	LastDirFile = filepath.Join(SuperFileStateDir, "lastdir")
 
 	// Trash Directories
@@ -65,7 +68,7 @@ var (
 	ConfigFile  = filepath.Join(SuperFileMainDir, "config.toml")
 	HotkeysFile = filepath.Join(SuperFileMainDir, "hotkeys.toml")
 
-	// ChooserFile is the path where superfile will write the file's path, which is to be
+	// ChooserFile is the path where Orbit will write the file's path, which is to be
 	// opened, before exiting
 	ChooserFile = ""
 

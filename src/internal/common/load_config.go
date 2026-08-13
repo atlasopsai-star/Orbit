@@ -13,11 +13,11 @@ import (
 	"github.com/charmbracelet/x/ansi"
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/trash"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/trash"
 )
 
 // Load configurations from the configuration file. Compares the content
@@ -34,8 +34,8 @@ func LoadConfigFile() {
 		if errors.As(err, &loadError) && loadError != nil {
 			if loadError.MissingFields() && !variable.FixConfigFile {
 				// Had missing fields and we did not fix
-				userMsg += "\nTo add missing fields to configuration file automatically run superfile " +
-					"with the --fix-config-file flag `spf --fix-config-file`"
+				userMsg += "\nTo add missing fields to configuration file automatically run Orbit " +
+					"with the --fix-config-file flag `orbit --fix-config-file`"
 			}
 			toExit = loadError.IsFatal()
 		}
@@ -144,8 +144,8 @@ func LoadHotkeysFile(ignoreMissingFields bool) {
 		if errors.As(err, &loadError) {
 			if loadError.MissingFields() && !variable.FixHotkeys {
 				// Had missing fields and we did not fix
-				userMsg += "\nTo add missing fields to hotkeys file automatically run superfile " +
-					"with the --fix-hotkeys flag `spf --fix-hotkeys`"
+				userMsg += "\nTo add missing fields to hotkeys file automatically run Orbit " +
+					"with the --fix-hotkeys flag `orbit --fix-hotkeys`"
 			}
 			toExit = loadError.IsFatal()
 		}
@@ -220,7 +220,7 @@ func LoadUserTheme(themeFile string, obj *ThemeType) error {
 	return nil
 }
 
-// LoadAllDefaultConfig : Load all default configurations from embedded superfile_config folder into global
+// LoadAllDefaultConfig : Load all default configurations from embedded orbit_config folder into global
 // configurations variables and write theme files if its needed.
 func LoadAllDefaultConfig(content embed.FS) {
 	err := LoadConfigStringGlobals(content)
@@ -331,9 +331,9 @@ func PopulateGlobalConfigs() error {
 	}
 
 	// This is src/internal/common/load_config.go
-	// we want src/superfile_config
+	// we want src/orbit_config
 	spfConfigDir := filepath.Join(filepath.Dir(filepath.Dir(filepath.Dir(filename))),
-		"superfile_config")
+		"orbit_config")
 
 	configFilePath := filepath.Join(spfConfigDir, "config.toml")
 	hotkeyFilePath := filepath.Join(spfConfigDir, "hotkeys.toml")

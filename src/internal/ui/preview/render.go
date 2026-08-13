@@ -15,11 +15,11 @@ import (
 	"github.com/alecthomas/chroma/v2/lexers"
 	"github.com/yorukot/ansichroma"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui"
-	"github.com/yorukot/superfile/src/internal/ui/rendering"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/rendering"
 )
 
 func renderDirectoryPreview(r *rendering.Renderer, itemPath string, previewHeight int) string {

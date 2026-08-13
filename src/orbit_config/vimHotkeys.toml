@@ -6,9 +6,9 @@
 
 #-- Maintainer: nonepork <https://github.com/nonepork>
 
-# This contains a hotkey config file for superfile, that's themed around vim
+# This contains a hotkey config file for Orbit, that's themed around vim
 # controls! More details can be found at
-# https://superfile.dev/configure/custom-hotkeys/.
+# https://github.com/atlasopsai-star/Orbit/configure/custom-hotkeys/.
 
 ###############################################################################
 #                                Global hotkeys                               #

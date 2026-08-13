@@ -9,8 +9,8 @@ import (
 
 	"github.com/fvbommel/sortorder"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/sortmodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 )
 
 func getOrderingFunc(elements []Element, reversed bool, sortKind sortmodel.SortKind) sliceOrderFunc {

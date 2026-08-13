@@ -3,8 +3,8 @@ package ui
 import (
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/rendering"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/rendering"
 )
 
 func SidebarRenderer(totalHeight int, totalWidth int, sidebarFocused bool) *rendering.Renderer {

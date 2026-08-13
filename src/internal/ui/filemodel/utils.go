@@ -1,9 +1,9 @@
 package filemodel
 
 import (
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
-	"github.com/yorukot/superfile/src/internal/ui/preview"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/preview"
 )
 
 func (m *Model) GetFocusedFilePanel() *filepanel.Model {

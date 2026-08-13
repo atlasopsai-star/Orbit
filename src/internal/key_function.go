@@ -5,16 +5,16 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui/filemodel"
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
-	"github.com/yorukot/superfile/src/internal/ui/spferror"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filemodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/spferror"
 
-	"github.com/yorukot/superfile/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
 
 	tea "charm.land/bubbletea/v2"
 
-	variable "github.com/yorukot/superfile/src/config"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
 )
 
 // mainKey handles most of key commands in the regular state of the application. For

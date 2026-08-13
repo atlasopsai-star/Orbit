@@ -36,7 +36,7 @@ def main():
     parser.add_argument('--close-wait-time', type=float,
                         help='Override default wait time after closing spf')
     parser.add_argument('--spf-path', type=str,
-                        help='Override the default spf executable path(../bin/spf) under test')
+                        help='Override the default spf executable path(../bin/orbit) under test')
     parser.add_argument('-t', '--tests', nargs='+',
                         help='Specify one or more than one space separated testcases to be run')
     # Parse arguments

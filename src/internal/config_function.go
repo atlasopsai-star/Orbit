@@ -9,19 +9,19 @@ import (
 
 	zoxidelib "github.com/lazysegtree/go-zoxide"
 
-	"github.com/yorukot/superfile/src/pkg/utils"
+	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
-	"github.com/yorukot/superfile/src/internal/ui/filepanel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
 
 	"github.com/barasher/go-exiftool"
 
-	"github.com/yorukot/superfile/src/internal/ui/processbar"
-	"github.com/yorukot/superfile/src/internal/ui/rendering"
-	"github.com/yorukot/superfile/src/internal/ui/sidebar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/rendering"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sidebar"
 
-	variable "github.com/yorukot/superfile/src/config"
-	"github.com/yorukot/superfile/src/config/icon"
-	"github.com/yorukot/superfile/src/internal/common"
+	variable "github.com/atlasopsai-star/Orbit/src/config"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 // initialConfig load and handle all configuration files (spf config,Hotkeys
@@ -33,11 +33,11 @@ func initialConfig(firstPanelPaths []string) (toggleDotFile bool, //nolint: nona
 	// Open log stream
 	file, err := os.OpenFile(variable.LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, utils.LogFilePerm)
 
-	// TODO : This could be improved if we want to make superfile more resilient to errors
+	// TODO : This could be improved if we want to make Orbit more resilient to errors
 	// For example if the log file directories have access issues.
 	// we could pass a dummy object to log.SetOutput() and the app would still function.
 	if err != nil {
-		utils.PrintfAndExitf("Error while opening superfile.log file : %v", err)
+		utils.PrintfAndExitf("Error while opening Orbit.log file : %v", err)
 	}
 	common.LoadConfigFile()
 

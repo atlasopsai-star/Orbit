@@ -13,8 +13,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/yorukot/superfile/src/internal/ui/notify"
-	"github.com/yorukot/superfile/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
 )
 
 func validateCompressOperation(sources []string) (int, error) {

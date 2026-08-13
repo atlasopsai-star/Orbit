@@ -2,7 +2,7 @@
 
 # build the app
 if [ "$(go env GOOS)" = "darwin" ]; then
-    CGO_ENABLED=1 go build -o ./bin/spf
+    CGO_ENABLED=1 go build -o ./bin/orbit
 else
-    CGO_ENABLED=0 go build -o ./bin/spf
+    CGO_ENABLED=0 go build -o ./bin/orbit
 fi

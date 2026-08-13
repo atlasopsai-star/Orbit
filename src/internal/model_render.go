@@ -4,11 +4,11 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/config/icon"
+	"github.com/atlasopsai-star/Orbit/src/config/icon"
 )
 
 func (m *model) sidebarRender() string {
@@ -91,23 +91,23 @@ func (m *model) typineModalRender() string {
 }
 
 func (m *model) introduceModalRender() string {
-	title := common.SidebarTitleStyle.Render(" Thanks for using superfile!!") +
+	title := common.SidebarTitleStyle.Render(" Thanks for using Orbit!!") +
 		common.ModalStyle.Render("\n You can read the following information before starting to use it!")
 	vimUserWarn := common.ProcessErrorStyle.Render("  ** Very importantly ** If you are a Vim/Nvim user, go to:\n" +
-		"  https://superfile.dev/configure/custom-hotkeys/ to change your hotkey settings!")
+		"  https://github.com/atlasopsai-star/Orbit/configure/custom-hotkeys/ to change your hotkey settings!")
 	subOne := common.SidebarTitleStyle.Render("  (1)") +
 		common.ModalStyle.Render(" If this is your first time, make sure you read:\n"+
-			"      https://superfile.dev/getting-started/tutorial/")
+			"      https://github.com/atlasopsai-star/Orbit/getting-started/tutorial/")
 	subTwo := common.SidebarTitleStyle.Render("  (2)") +
 		common.ModalStyle.Render(" If you forget the relevant keys during use,\n"+
 			"      you can press \"?\" (shift+/) at any time to query the keys!")
 	subThree := common.SidebarTitleStyle.Render("  (3)") +
 		common.ModalStyle.Render(" For more customization you can refer to:\n"+
-			"      https://superfile.dev/")
+			"      https://github.com/atlasopsai-star/Orbit/")
 	subFour := common.SidebarTitleStyle.Render("  (4)") +
-		common.ModalStyle.Render(" Thank you again for using superfile.\n"+
+		common.ModalStyle.Render(" Thank you again for using Orbit.\n"+
 			"      If you have any questions, please feel free to ask at:\n"+
-			"      https://github.com/yorukot/superfile\n"+
+			"      https://github.com/atlasopsai-star/Orbit\n"+
 			"      Of course, you can always open a new issue to share your idea \n"+
 			"      or report a bug!")
 	return common.FirstUseModal(m.helpMenu.GetHeight(), m.helpMenu.GetWidth()).

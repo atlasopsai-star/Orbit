@@ -1,6 +1,6 @@
 package helpmenu
 
-import "github.com/yorukot/superfile/src/internal/common"
+import "github.com/atlasopsai-star/Orbit/src/internal/common"
 
 // Help menu panel list up
 func (m *Model) ListUp() {

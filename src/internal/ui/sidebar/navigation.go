@@ -3,7 +3,7 @@ package sidebar
 import (
 	"log/slog"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 func (s *Model) ListUp() {

@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 type thumbnailGeneratorInterface interface {
@@ -143,7 +143,7 @@ func (g *psGenerator) generateThumbnail(inputPath string, outputPathWithoutExt s
 type ThumbnailGenerator struct {
 	// This is a cache. Key -> Video file path, Value -> Thumbnail file path
 	// TODO: We can potentially make it persistent, preventing generation
-	// of thumbnail on every launch or superfile
+	// of thumbnail on every launch or Orbit
 	tempFilesCache map[string]string
 	tempDirectory  string
 	mu             sync.Mutex
@@ -151,7 +151,7 @@ type ThumbnailGenerator struct {
 }
 
 func NewThumbnailGenerator() (*ThumbnailGenerator, error) {
-	tmp, err := os.MkdirTemp("", "superfiles-*")
+	tmp, err := os.MkdirTemp("", "orbit-files-*")
 	if err != nil {
 		return nil, err
 	}

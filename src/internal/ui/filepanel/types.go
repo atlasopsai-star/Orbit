@@ -7,7 +7,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/lipgloss/v2"
 
-	"github.com/yorukot/superfile/src/internal/ui/sortmodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 )
 
 // Make sure to use New() to ensure that maps are initialized

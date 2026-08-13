@@ -1,7 +1,7 @@
 package filepanel
 
 import (
-	"github.com/yorukot/superfile/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 )
 
 func (m *Model) UpdateDimensions(width, height int) {

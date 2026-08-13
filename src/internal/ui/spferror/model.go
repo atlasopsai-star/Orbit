@@ -1,8 +1,8 @@
 package spferror
 
 import (
-	"github.com/yorukot/superfile/src/internal/common"
-	processbar "github.com/yorukot/superfile/src/internal/ui/processbar"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	processbar "github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
 
 	tea "charm.land/bubbletea/v2"
 )

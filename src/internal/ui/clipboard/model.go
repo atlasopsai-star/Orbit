@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/yorukot/superfile/src/internal/common"
-	"github.com/yorukot/superfile/src/internal/ui"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui"
 )
 
 // The fact that its visible in UI or not, is controlled by the main model

@@ -1,258 +1,54 @@
-<div align="center">
+# Orbit
 
-<h4>superfile is supported by the community.</h4>
+<p align="center">
+  <strong>Orbit</strong><br>
+  <em>A fast, beautiful, keyboard-first terminal file manager for Mac developers.</em>
+</p>
 
-<a href="https://ko-fi.com/yorukot">
-  <img alt="Donate to superfile on Ko-fi" src="https://ko-fi.com/img/githubbutton_sm.svg">
-</a>
+Orbit is a polished evolution of [Superfile](https://github.com/yorukot/superfile): the familiar multi-pane terminal file-manager workflow, with an Orbit identity and a focused roadmap for safer file operations, macOS integration, fast search, useful previews, Git awareness, and responsive performance.
 
-<hr>
+## Status
 
-</div>
+Orbit is in active foundation development. Existing file-manager functionality is preserved while the product is migrated and improved in small, tested milestones.
 
-<div align="center">
-<br>
-<picture>
-  <source width="300" media="(prefers-color-scheme: dark)" srcset="website/src/assets/superfile-night.svg" />
-  <source width="300" media="(prefers-color-scheme: light)" srcset="website/src/assets/superfile-day.svg" />
-  <img alt="superfile LOGO" src="website/src/assets/superfile-day.svg" />
-</picture>
-<br><br>
+## Build from source
 
-[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/yorukot/superfile/refs/heads/main/LICENSE) [![Discord Link](https://img.shields.io/discord/1338415256875307110?label=discord&logo=discord&logoColor=white)](https://discord.gg/YYtJ23Du7B) [![Release](https://img.shields.io/github/v/release/yorukot/superfile.svg?style=flat-square)](https://github.com/yorukot/superfile/releases/latest) ![Homebrew downloads](https://img.shields.io/homebrew/installs/dy/superfile?label=Homebrew) ![GitHub downloads](https://img.shields.io/github/downloads/yorukot/superfile/total?label=GitHub%20downloads%20assets%2Freleases) [![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/yorukot/superfile?utm_source=oss&utm_medium=github&utm_campaign=yorukot%2Fsuperfile&labelColor=171717&color=FF570A&&label=CodeRabbit+Reviews)](https://www.coderabbit.ai/)
-
-![](website/src/assets/demo.png)
-
-</div>
-
-## Demo
-
-| Perform common operations  |
-| -------------------------- |
-| ![](asset/readme/demo.gif) |
-
-## Content
-
-- [Demo](#demo)
-- [Content](#content)
-- [Installation](#installation)
-  - [macOS and Linux](#macos-and-linux)
-  - [Windows](#windows)
-    - [Powershell](#powershell)
-    - [Winget](#winget)
-    - [Scoop](#scoop)
-  - [More installation methods](#more-installation-methods)
-- [Build](#build)
-  - [For macOS/Linux](#for-macoslinux)
-  - [For Windows](#for-windows)
-- [Start superfile](#start-superfile)
-- [Supported Systems](#supported-systems)
-- [Tutorial](#tutorial)
-- [Plugins](#plugins)
-- [Themes](#themes)
-- [Hotkeys](#hotkeys)
-- [Notes](#notes)
-- [Troubleshooting](#troubleshooting)
-- [Uninstalling](#uninstalling)
-  - [macOS and Linux](#macos-and-linux-1)
-  - [Windows](#windows)
-- [Contributing](#contributing)
-- [Thanks](#thanks)
-  - [Support](#support)
-  - [Core maintainer](#core-maintainer)
-  - [Contributors](#contributors)
-  - [Powered by](#powered-by)
-  - [Star History](#star-history)
-- [༼ つ ◕\_◕ ༽つ Please share.](#-つ-_-つ-please-share)
-
-## Installation
-
-### macOS and Linux
+Requirements: Go 1.26+ and a terminal with Unicode support.
 
 ```bash
-bash -c "$(curl -sLo- https://superfile.dev/install.sh)"
+git clone https://github.com/atlasopsai-star/Orbit.git
+cd Orbit
+go build -o ./bin/orbit .
+./bin/orbit .
 ```
 
-If you want to inspect the script, see : [install.sh](./website/public/install.sh)
-
-### Windows
-
-#### Powershell
-
-```powershell
-powershell -ExecutionPolicy Bypass -Command "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/install.ps1'))"
-```
-
-If you want to inspect the script, see : [install.ps1](./website/public/install.ps1)
-
-#### [Winget](https://winget.run/)
-
-```powershell
-winget install --id yorukot.superfile
-```
-
-#### [Scoop](https://scoop.sh/)
-
-```
-scoop install superfile
-```
-
-### More installation methods
-
-[Click me to check on how to install](https://superfile.dev/getting-started/installation/)
-
-## Build
-
-You can build the source code yourself by using these steps:
-
-**Requirements**
-
-- [golang](https://go.dev/doc/install)
-
-**Build Steps**
-
-Clone this repository using the following command:
-
-```
-git clone https://github.com/yorukot/superfile.git --depth=1
-```
-
-Enter the downloaded directory:
+Development commands are also available through the Makefile:
 
 ```bash
-cd superfile
+make test
+make build
 ```
 
-### For macOS/Linux
+## Configuration
 
-Run the `build.sh` file:
+Orbit uses its own XDG namespace and will not overwrite an existing Superfile configuration:
 
-```bash
-./build.sh
-```
+- Linux: `~/.config/orbit/`
+- macOS: the corresponding application-support `orbit` namespace from the XDG implementation
+- State, cache, and data paths use the corresponding `orbit` namespace.
 
-Add the binary file to your $PATH, e.g., in `/usr/local/bin`:
+The default files include `config.toml`, `hotkeys.toml`, and theme files. Update checks are disabled by default until Orbit publishes releases.
 
-```bash
-sudo mv ./bin/spf /usr/local/bin
-```
+## Core controls
 
-### For Windows
+Orbit retains the upstream keyboard-first workflow. Press `?` inside Orbit for the complete help overlay and configured shortcuts.
 
-```bash
-go build -o bin/spf.exe
-```
+## Roadmap
 
-Edit System Environment Variables and add superfile repo's `bin` directory to your PATH
+The next milestones prioritize visual polish, macOS actions (Finder, Trash, Terminal, Cursor, VS Code, Zed, and Xcode), quick actions and command search, deterministic filename/content search, safer conflicts and progress, richer previews, lightweight Git status, and large-directory performance.
 
-## Start superfile
+## Acknowledgments and license
 
-```bash
-spf
-```
+Orbit is based on Superfile by Yorukot and contributors. The upstream MIT license and third-party notices are preserved in [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md) and [`ATTRIBUTION.md`](ATTRIBUTION.md). Orbit changes are maintained by Atlas Ops AI.
 
-## Supported Systems
-
-- \[x\] Linux
-- \[x\] macOS
-- \[x\] Windows (Not fully supported yet)
-
-## Tutorial
-
-After you install superfile, you can go [here](https://superfile.dev/getting-started/tutorial/) to briefly understand how to use superfile!
-
-## Plugins
-
-[Click me to the plugins wiki](https://superfile.dev/list/plugin-list/)
-
-## Themes
-
-[Click me to the theme wiki](https://superfile.dev/configure/custom-theme/)
-
-## Hotkeys
-
-> [!WARNING] If you are vim/nvim user please change your default hotkeys config to vim version!
-
-[**Click me to see the hotkey wiki**](https://superfile.dev/configure/custom-hotkeys/)
-
-## Notes
-
-We have an auto update functionality, that fetches superfile's latest released version from github (if last timestamp of last version check was less than 24 hours) and prints a prompt to user, if there is a newer version available.
-
-You can turn this off, by setting `auto_check_update` to false in superfile config. [**Click me to see the config wiki**](https://superfile.dev/configure/superfile-config/)
-
-## Troubleshooting
-
-[**Click me to see common problem fix**](https://superfile.dev/troubleshooting/)
-
-## Uninstalling
-
-### macOS and Linux
-
-```bash
-bash -c "$(curl -sLo- https://superfile.dev/uninstall.sh)"
-```
-
-If you want to inspect the script, see : [uninstall.sh](./website/public/uninstall.sh)
-
-### Windows
-
-To uninstall superfile on Windows, use this powershell script.
-
-```powershell
-powershell -ExecutionPolicy Bypass -Command "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/uninstall.ps1'))"
-```
-
-## Contributing
-
-If you want to contribute please follow the [contribution guide](./CONTRIBUTING.md)
-
-[**Click me to see changelog**](https://superfile.dev/changelog)
-
-## Thanks
-
-### Support
-
-- a Star on my GitHub repository would be nice 🌟
-- You can buy a coffee for me 💖
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G1JEGGC)
-
-### Core maintainer
-
-> We welcome anyone who wants to become a core maintainer. Feel free to reach out!
-
-- **[@yorukot](https://github.com/yorukot)** - Original author and maintainer
-- **[@lazysegtree](https://github.com/lazysegtree)** - Core maintainer
-
-### Contributors
-
-**Thanks to all the contributors for making this project even greater!**
-
-<a href="https://github.com/yorukot/superfile/graphs/contributors">
-  <img src="https://gthanks.yorukot.me/image?target=yorukot%2Fsuperfile" />
-</a>
-
-### Powered by
-
-<a href="https://jb.gg/OpenSource"><img alt="JetBrains logo" align="right" width="200" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg"></a>
-
-Thanks to JetBrains team for providing open-source licenses to support the maintenance of superfile.
-
-### Star History
-
-**THANKS FOR All OF YOUR STARS!** Your stars are my motivation to keep updating!
-
-<a href="https://www.star-history.com/?repos=yorukot%2Fsuperfile&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=yorukot/superfile&type=date&theme=dark&legend=top-left&sealed_token=nEoMOYsfp1zwZ7rT-Fm6VR2yTa6cwW35VR0BwVxTuE8Dt17vRcRIQUFXeWdh6lZixlAl5e_fIVFs2Xe4cRdvAnexR5Q6JqlGVZK05Iu0mko8gYLjTdjq0g" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=yorukot/superfile&type=date&legend=top-left&sealed_token=nEoMOYsfp1zwZ7rT-Fm6VR2yTa6cwW35VR0BwVxTuE8Dt17vRcRIQUFXeWdh6lZixlAl5e_fIVFs2Xe4cRdvAnexR5Q6JqlGVZK05Iu0mko8gYLjTdjq0g" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=yorukot/superfile&type=date&legend=top-left&sealed_token=nEoMOYsfp1zwZ7rT-Fm6VR2yTa6cwW35VR0BwVxTuE8Dt17vRcRIQUFXeWdh6lZixlAl5e_fIVFs2Xe4cRdvAnexR5Q6JqlGVZK05Iu0mko8gYLjTdjq0g" />
- </picture>
-</a>
-
-<div align="center">
-
-## ༼ つ ◕_◕ ༽つ Please share.
-
-</div>
+Orbit is distributed under the MIT License.
