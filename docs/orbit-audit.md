@@ -25,4 +25,5 @@ Baseline: `a97381e` (`orbit-baseline-2026-08-13`)
 - Orbit embedded configuration directory and update target/default.
 - Orbit CLI identity, window title, build output, and core docs.
 - Explicit Superfile ancestry retained in legal attribution.
-- Stable compatibility names such as `SuperFile*` Go variables and `open_spf_prompt` TOML keys remain internal/config API surfaces; they are documented rather than renamed in this milestone.
+- Stable compatibility names such as `SuperFile*` Go variables and `open_spf_prompt` TOML keys remain internal/config API surfaces; they are documented rather than renamed.
+- Orbit Dark is now the default embedded theme and is also the runtime fallback when a selected theme cannot be loaded.

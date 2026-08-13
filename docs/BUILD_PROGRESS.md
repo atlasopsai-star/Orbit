@@ -18,14 +18,14 @@
 
 ## Current
 
-- Milestone 1 foundation is implemented and verified; commit the working state, then begin visual polish.
+- Milestones 1 and 2 are implemented, verified, committed, and pushed on `orbit-foundation` (`f826801`, `efe2784`).
 
 ## Remaining
 
 - Visual polish and responsive layout review.
 - macOS integrations, command palette, search, safer file operations, previews, Git awareness, storage visibility, and performance work.
 - Add focused regression tests for each new feature.
-- Push the development branch to the Orbit fork after verification.
+- Continue with macOS integrations, search, safer file operations, previews, Git awareness, and performance in focused follow-up commits.
 
 ## Blocked
 
