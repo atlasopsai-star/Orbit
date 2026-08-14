@@ -42,19 +42,22 @@ type SearchBatch struct {
 var ignoredDirectories = map[string]bool{".git": true, "node_modules": true, "target": true, ".next": true, "dist": true, "build": true, "DerivedData": true}
 var errSearchLimit = errors.New("search result limit reached")
 
+type ignoreRule struct {
+	matcher *ignore.GitIgnore
+	negate  bool
+}
+
 type ignoreMatcher struct {
-	root      string
-	rules     map[string]*ignore.GitIgnore
-	negations map[string][]*ignore.GitIgnore
-	checked   map[string]bool
+	root    string
+	rules   map[string][]ignoreRule
+	checked map[string]bool
 }
 
 func newIgnoreMatcher(root string) *ignoreMatcher {
 	return &ignoreMatcher{
-		root:      root,
-		rules:     make(map[string]*ignore.GitIgnore),
-		negations: make(map[string][]*ignore.GitIgnore),
-		checked:   make(map[string]bool),
+		root:    root,
+		rules:   make(map[string][]ignoreRule),
+		checked: make(map[string]bool),
 	}
 }
 
@@ -78,23 +81,27 @@ func (m *ignoreMatcher) ignored(path string) bool {
 		if !m.checked[dir] {
 			m.checked[dir] = true
 			ignorePath := filepath.Join(dir, ".gitignore")
-			compiled, err := ignore.CompileIgnoreFile(ignorePath)
-			if err == nil {
-				m.rules[dir] = compiled
-				if contents, readErr := os.ReadFile(ignorePath); readErr == nil {
-					for _, line := range strings.Split(string(contents), "\\n") {
-						line = strings.TrimSpace(line)
-						if strings.HasPrefix(line, "!") && !strings.HasPrefix(line, `\\!`) {
-							if negated := ignore.CompileIgnoreLines(strings.TrimPrefix(line, "!")); negated != nil {
-								m.negations[dir] = append(m.negations[dir], negated)
-							}
-						}
+			if contents, err := os.ReadFile(ignorePath); err == nil {
+				for _, line := range strings.Split(string(contents), "\n") {
+					line = strings.TrimSuffix(line, "\r")
+					negate := strings.HasPrefix(line, "!") && !strings.HasPrefix(line, `\\!`)
+					pattern := strings.TrimPrefix(line, "!")
+					if !negate {
+						pattern = line
+					} else if strings.HasPrefix(pattern, "!") {
+						// A second leading bang is literal after the
+						// rule's negation marker.
+						pattern = "\\" + pattern
+					}
+					compiled := ignore.CompileIgnoreLines(pattern)
+					if compiled != nil {
+						m.rules[dir] = append(m.rules[dir], ignoreRule{matcher: compiled, negate: negate})
 					}
 				}
 			}
 		}
 		rules := m.rules[dir]
-		if rules == nil {
+		if len(rules) == 0 {
 			continue
 		}
 		relative, err := filepath.Rel(dir, path)
@@ -102,18 +109,12 @@ func (m *ignoreMatcher) ignored(path string) bool {
 			continue
 		}
 		relative = filepath.Clean(filepath.ToSlash(relative))
-		matched, pattern := rules.MatchesPathHow(relative)
-		if matched && pattern != nil {
-			ignored = !pattern.Negate
-			continue
-		}
-		// go-gitignore intentionally reports a negated-only matcher as no
-		// match. Check negated rules separately so a child file can re-include
-		// a path ignored by an ancestor .gitignore.
-		for _, negated := range m.negations[dir] {
-			if negated.MatchesPath(relative) {
-				ignored = false
-				break
+		for _, rule := range rules {
+			if rule.matcher.MatchesPath(relative) {
+				// Git ignore rules are ordered: the last matching rule wins.
+				// Keep the negation bit outside go-gitignore because its
+				// MatchesPathHow API discards a final negated match.
+				ignored = !rule.negate
 			}
 		}
 	}
@@ -183,6 +184,8 @@ func SearchStream(ctx context.Context, root, query string, mode SearchMode, limi
 			}
 			if entry.IsDir() {
 				if path != root && (ignoredDirectories[entry.Name()] || matcher.ignored(path)) {
+					// Git cannot re-include a descendant once its parent
+					// directory is ignored, so pruning keeps searches bounded.
 					return filepath.SkipDir
 				}
 				return nil

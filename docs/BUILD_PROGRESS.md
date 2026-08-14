@@ -5,8 +5,8 @@
 - Orbit foundation and Orbit Dark are committed on `orbit-foundation` and pushed to `origin`.
 - Added a context-aware Orbit Actions registry and keyboard-first `Ctrl-K` palette.
 - Added structured Finder, Terminal/editor launch, path-copy, Trash, duplicate, compress, extract, and folder-size actions.
-- Search now streams bounded batches, cancels stale requests, caps renderable results at 200, emits multiple content matches with line numbers, skips heavy directories, and applies hierarchical `.gitignore` rules with negation support.
-- Search Enter navigates the focused file panel to the containing directory and focuses the selected filename.
+- Search now streams bounded batches, cancels stale requests, caps renderable results at 200, emits multiple content matches with line numbers, skips heavy directories, and applies hierarchical `.gitignore` rules with ordered last-match-wins negation support across root and nested files.
+- Search Enter navigates the focused file panel to the containing directory and focuses the selected filename. Ignore parsing is covered for nested overrides, CRLF files, comments, and escaped `!` patterns; ignored parent directories are pruned according to Git's re-inclusion rules.
 - Folder-size scanning now exposes truthful progress, Esc cancellation, refresh, and a session cache with stale-request protection.
 - Added preferred macOS terminal configuration (`terminal`, `iterm2`, `ghostty`, `warp`) and preferred editor configuration.
 - Hardened palette/search/folder-size/diff rendering for narrow dimensions and added adaptive file-panel action hints.
