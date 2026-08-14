@@ -4,8 +4,11 @@ import "charm.land/lipgloss/v2"
 
 func (m *Model) Render() string {
 	f := make([]string, m.PanelCount()+1)
-	for i, filePanel := range m.FilePanels {
-		f[i] = filePanel.Render(filePanel.IsFocused)
+	for i := range m.FilePanels {
+		// RenderCurrent keeps the focus flag and all panel fields inside the
+		// panel's own critical section; a range-copy here would read the panel
+		// struct outside the lock and race with concurrent panel mutations.
+		f[i] = m.FilePanels[i].RenderCurrent()
 	}
 	f[m.PanelCount()] = m.GetFilePreviewRender()
 	return lipgloss.JoinHorizontal(lipgloss.Top, f...)

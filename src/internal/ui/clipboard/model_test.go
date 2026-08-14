@@ -36,7 +36,7 @@ func TestClipboardRender_Empty(t *testing.T) {
 		fp := filepath.Join(dir, "f"+strconv.Itoa(i)+".txt")
 		items = append(items, fp)
 	}
-	m := &Model{}
+	m := New()
 	m.SetDimensions(15+len(items[0]), 6)
 	t.Run("Empty", func(t *testing.T) {
 		out := ansi.Strip(m.Render())
@@ -81,7 +81,7 @@ func TestPruneInaccessibleItemsAndGet(t *testing.T) {
 	files := []string{filepath.Join(dir, "f1"), filepath.Join(dir, "f2")}
 	utils.SetupFiles(t, files...)
 
-	m := &Model{}
+	m := New()
 	m.SetItems(files)
 	assert.Equal(t, files, m.PruneInaccessibleItemsAndGet())
 	require.NoError(t, os.Remove(files[1]))

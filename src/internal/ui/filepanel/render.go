@@ -21,12 +21,27 @@ import (
   - Other panels like clipboard and metadata's content changes too on resize
 */
 func (m *Model) Render(focused bool) string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.renderUnlocked(focused)
+}
+
+// RenderCurrent renders the panel using its own focus state. It must be used
+// instead of reading IsFocused and calling Render when the caller cannot hold
+// the panel lock, so the focus flag is read under the same critical section.
+func (m *Model) RenderCurrent() string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.renderUnlocked(m.IsFocused)
+}
+
+func (m *Model) renderUnlocked(focused bool) string {
 	r := ui.FilePanelRenderer(m.height, m.width, focused)
 
 	m.renderTopBar(r)
 	m.renderSearchBar(r)
-	m.renderFooter(r, m.SelectedCount())
-	if m.NeedRenderHeaders() {
+	m.renderFooter(r, m.selectedCountUnlocked())
+	if m.needRenderHeadersUnlocked() {
 		m.renderColumnHeaders(r)
 	}
 	m.renderFileEntries(r)
@@ -40,7 +55,7 @@ func (m *Model) renderTopBar(r *rendering.Renderer) {
 	if m.GitBranch != "" {
 		label += "  ⎇ " + m.GitBranch
 	}
-	truncatedPath := common.TruncateTextBeginning(label, m.GetContentWidth()-common.InnerPadding, "...")
+	truncatedPath := common.TruncateTextBeginning(label, m.contentWidthUnlocked()-common.InnerPadding, "...")
 	r.AddLines(common.FilePanelTopDirectoryIcon + common.FilePanelTopPathStyle.Render(truncatedPath))
 	r.AddSection()
 }
@@ -107,14 +122,14 @@ func (m *Model) renderColumnHeaders(r *rendering.Renderer) {
 }
 
 func (m *Model) renderFileEntries(r *rendering.Renderer) {
-	if m.Empty() {
+	if m.emptyUnlocked() {
 		r.AddLines(common.FilePanelNoneText)
 		return
 	}
-	end := min(m.renderIndex+m.PanelElementHeight(), m.ElemCount())
+	end := min(m.renderIndex+m.panelElementHeightUnlocked(), m.elemCountUnlocked())
 
 	for itemIndex := m.renderIndex; itemIndex < end; itemIndex++ {
-		if m.Renaming && itemIndex == m.GetCursor() {
+		if m.Renaming && itemIndex == m.GetCursorUnlocked() {
 			r.AddLines(m.Rename.View())
 			continue
 		}
@@ -147,11 +162,11 @@ func (m *Model) getPanelModeInfo(selectedCount uint) (string, string) {
 }
 
 func (m *Model) getCursorString() string {
-	cursor := m.GetCursor()
-	if !m.Empty() {
+	cursor := m.GetCursorUnlocked()
+	if !m.emptyUnlocked() {
 		cursor++ // Convert to 1-based
 	}
-	return fmt.Sprintf("%d/%d", cursor, m.ElemCount())
+	return fmt.Sprintf("%d/%d", cursor, m.elemCountUnlocked())
 }
 
 func (m *Model) renderSelectBox(isSelected bool) string {
@@ -173,8 +188,14 @@ func (m *Model) renderSelectBox(isSelected bool) string {
 
 // Checks whether a panel needs re-render due to being invalid or due to directory change
 func (m *Model) NeedsReRender() bool {
-	if !m.EmptyOrInvalid() {
-		return filepath.Dir(m.GetFirstElement().Location) != m.Location
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.needsReRenderUnlocked()
+}
+
+func (m *Model) needsReRenderUnlocked() bool {
+	if !m.emptyOrInvalidUnlocked() {
+		return filepath.Dir(m.getFirstElementUnlocked().Location) != m.Location
 	}
 	return true
 }

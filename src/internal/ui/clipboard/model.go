@@ -5,6 +5,7 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"sync"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/common"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui"
@@ -12,9 +13,15 @@ import (
 
 // The fact that its visible in UI or not, is controlled by the main model
 type Model struct {
+	mu *sync.Mutex
+
 	width  int
 	height int
 	items  copyItems
+}
+
+func New() Model {
+	return Model{mu: new(sync.Mutex)}
 }
 
 // Copied items
@@ -24,11 +31,19 @@ type copyItems struct {
 }
 
 func (m *Model) SetDimensions(width int, height int) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.width = width
 	m.height = height
 }
 
 func (m *Model) Render() string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.renderUnlocked()
+}
+
+func (m *Model) renderUnlocked() string {
 	r := ui.ClipboardRenderer(m.height, m.width)
 	viewHeight := m.height - common.BorderPadding
 	viewWidth := m.width - common.InnerPadding
@@ -59,19 +74,27 @@ func (m *Model) Render() string {
 }
 
 func (m *Model) IsCut() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.items.cut
 }
 
 func (m *Model) Reset(cut bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.items.cut = cut
 	m.items.items = m.items.items[:0]
 }
 
 func (m *Model) Add(location string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.items.items = append(m.items.items, location)
 }
 
 func (m *Model) SetItems(items []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.items.items = make([]string, len(items))
 	copy(m.items.items, items)
 }
@@ -84,6 +107,12 @@ func (m *Model) pruneInaccessibleItems() {
 }
 
 func (m *Model) GetItems() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.getItemsUnlocked()
+}
+
+func (m *Model) getItemsUnlocked() []string {
 	// return a copy to prevent external mutation
 	items := make([]string, len(m.items.items))
 	copy(items, m.items.items)
@@ -92,25 +121,35 @@ func (m *Model) GetItems() []string {
 
 // Use this to use a copy that is in sync with current state of filesystem
 func (m *Model) PruneInaccessibleItemsAndGet() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	// Clipboard items might becomes outdated with
 	// externally/interally triggered changes
 	m.pruneInaccessibleItems()
-	return m.GetItems()
+	return m.getItemsUnlocked()
 }
 
 func (m *Model) Len() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return len(m.items.items)
 }
 
 func (m *Model) GetWidth() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.width
 }
 
 func (m *Model) GetHeight() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.height
 }
 
 func (m *Model) GetFirstItem() string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if len(m.items.items) == 0 {
 		return ""
 	}

@@ -3,6 +3,7 @@ package processbar
 import (
 	"fmt"
 	"log/slog"
+	"sync"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/common"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui"
@@ -10,6 +11,8 @@ import (
 
 // Model for process bar internal
 type Model struct {
+	mu *sync.Mutex
+
 	renderIndex int
 	cursor      int
 
@@ -33,6 +36,7 @@ func New() Model {
 // should be returning pointer object, and implement tea.Model
 func NewModelWithOptions(width int, height int) Model {
 	m := Model{
+		mu:          new(sync.Mutex),
 		renderIndex: 0,
 		cursor:      0,
 		processes:   make(map[string]Process),
@@ -44,6 +48,12 @@ func NewModelWithOptions(width int, height int) Model {
 }
 
 func (m *Model) SetDimensions(width int, height int) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.setDimensionsUnlocked(width, height)
+}
+
+func (m *Model) setDimensionsUnlocked(width int, height int) {
 	if width < minWidth {
 		slog.Warn("Invalid width, using minimum", "provided", width, "minimum", minWidth)
 		width = minWidth
@@ -57,6 +67,8 @@ func (m *Model) SetDimensions(width int, height int) {
 }
 
 func (m *Model) AddProcess(p Process) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if _, ok := m.processes[p.ID]; ok {
 		return &ProcessAlreadyExistsError{id: p.ID}
 	}
@@ -65,10 +77,14 @@ func (m *Model) AddProcess(p Process) error {
 }
 
 func (m *Model) AddOrUpdateProcess(p Process) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.processes[p.ID] = p
 }
 
 func (m *Model) UpdateExistingProcess(p Process) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if _, ok := m.processes[p.ID]; !ok {
 		return &NoProcessFoundError{id: p.ID}
 	}
@@ -77,11 +93,15 @@ func (m *Model) UpdateExistingProcess(p Process) error {
 }
 
 func (m *Model) GetByID(id string) (Process, bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	p, ok := m.processes[id]
 	return p, ok
 }
 
 func (m *Model) HasRunningProcesses() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	for _, data := range m.processes {
 		if data.State == InOperation && data.Done != data.Total {
 			return true
@@ -91,6 +111,12 @@ func (m *Model) HasRunningProcesses() bool {
 }
 
 func (m *Model) Render(processBarFocused bool) string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.renderUnlocked(processBarFocused)
+}
+
+func (m *Model) renderUnlocked(processBarFocused bool) string {
 	r := ui.ProcessBarRenderer(m.height, m.width, processBarFocused)
 	if !m.isValid() {
 		slog.Error("processBar in invalid state", "render", m.renderIndex,

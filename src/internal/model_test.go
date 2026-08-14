@@ -295,11 +295,11 @@ func TestChooserFile(t *testing.T) {
 func eventuallyEnsurePreviewContent(t *testing.T, m *model, content string, msgAndArgs ...any) {
 	contains := false
 	assert.Eventually(t, func() bool {
-		contains = strings.Contains(m.fileModel.FilePreview.GetContent(), content)
+		contains = strings.Contains(m.previewContent(), content)
 		return contains
 	}, DefaultTestTimeout, DefaultTestTick, msgAndArgs...)
 	if !contains {
-		pContent := ansi.Strip(m.fileModel.FilePreview.GetContent())
+		pContent := ansi.Strip(m.previewContent())
 		pContent = pContent[:min(len(pContent), 20)]
 		t.Logf("%s was not found in '%s'", content, pContent)
 	}
@@ -324,14 +324,14 @@ func TestAsyncPreviewPanelSync(t *testing.T) {
 	p := NewTestTeaProgWithEventLoopWithWinSize(t, m, 4*DefaultTestModelWidth, 4*DefaultTestModelHeight)
 
 	eventuallyEnsurePreviewContent(t, m, content1, "file1 content should load initially")
-	pW := m.fileModel.FilePreview.GetContentWidth()
+	pW := m.previewContentWidth()
 
 	// Create two panels
 	splitPanelAsync(p)
 	splitPanelAsync(p)
 	eventuallyEnsurePreviewContent(t, m, content1, "file1 content should reload after new panel")
 
-	assert.NotEqual(t, pW, m.fileModel.FilePreview.GetContentWidth(),
+	assert.NotEqual(t, pW, m.previewContentWidth(),
 		"width should change on new panel creation")
 
 	p.Send(tea.KeyPressMsg{Code: tea.KeyDown})

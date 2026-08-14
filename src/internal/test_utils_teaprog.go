@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/stretchr/testify/require"
 
 	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 )
@@ -71,6 +72,20 @@ func (p *TeaProg) SendKey(key string) {
 	p.Send(utils.TeaRuneKeyMsg(key))
 }
 
+// NavigateToDir changes the focused panel's directory through the event loop
+// and blocks until the panel has landed on the target with its elements loaded.
+// The navigation message and the follow-up nil update are applied via
+// SendDirectly so element loading happens synchronously on this goroutine,
+// serialized against the running event loop by the model mutex.
+func (p *TeaProg) NavigateToDir(t *testing.T, dir string) {
+	t.Helper()
+	p.SendDirectly(navigateToDirMsg{dir: dir})
+	p.SendDirectly(nil)
+	require.Eventually(t, func() bool {
+		return p.getModel().getFocusedFilePanel().GetLocation() == dir
+	}, DefaultTestTimeout, DefaultTestTick, "Focused panel should navigate to %s", dir)
+}
+
 // Dont use eventloop and dont care about the tea.Cmd returned by Update()
 func (p *TeaProg) SendDirectly(msgs ...tea.Msg) tea.Cmd {
 	cmds := make([]tea.Cmd, len(msgs))
@@ -93,5 +108,9 @@ func (p *TeaProg) SendKeyDirectly(key string) tea.Cmd {
 }
 
 func (p *TeaProg) Close() {
+	// Kill is asynchronous; Wait blocks until the event loop has fully stopped
+	// so that later cleanups (e.g. restoring global config) never race with a
+	// still-running event-loop goroutine.
 	p.prog.Kill()
+	p.prog.Wait()
 }

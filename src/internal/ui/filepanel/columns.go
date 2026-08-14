@@ -13,10 +13,10 @@ import (
 
 // The renderer for the mandatory first column in the file panel, with a name, a cursor, and a select option.
 func (m *Model) renderFileName(indexElement int, columnWidth int) string {
-	elem := m.GetElementAtIdx(indexElement)
-	isSelected := m.CheckSelected(elem.Location)
+	elem := m.getElementAtIdxUnlocked(indexElement)
+	isSelected := m.checkSelectedUnlocked(elem.Location)
 	cursor := emptyCursor
-	if indexElement == m.GetCursor() && !m.SearchBar.Focused() {
+	if indexElement == m.GetCursorUnlocked() && !m.SearchBar.Focused() {
 		cursor = icon.Cursor
 	}
 
@@ -58,7 +58,7 @@ func gitStatusStyle(status string) lipgloss.Style {
 }
 
 func (m *Model) renderDelimiter(indexElement int, columnWidth int) string {
-	isSelected := m.CheckSelected(m.GetElementAtIdx(indexElement).Location)
+	isSelected := m.checkSelectedUnlocked(m.getElementAtIdxUnlocked(indexElement).Location)
 	return common.FilePanelItemRender(
 		ColumnDelimiter,
 		columnWidth,
@@ -69,8 +69,8 @@ func (m *Model) renderDelimiter(indexElement int, columnWidth int) string {
 }
 
 func (m *Model) renderFileSize(indexElement int, columnWidth int) string {
-	elem := m.GetElementAtIdx(indexElement)
-	isSelected := m.CheckSelected(elem.Location)
+	elem := m.getElementAtIdxUnlocked(indexElement)
+	isSelected := m.checkSelectedUnlocked(elem.Location)
 	sizeValue := common.FormatFileSize(elem.Info.Size())
 	if elem.Info.IsDir() {
 		sizeValue = ""
@@ -86,8 +86,8 @@ func (m *Model) renderFileSize(indexElement int, columnWidth int) string {
 
 // TODO: make time template configurable
 func (m *Model) renderModifyTime(indexElement int, columnWidth int) string {
-	elem := m.GetElementAtIdx(indexElement)
-	isSelected := m.CheckSelected(elem.Location)
+	elem := m.getElementAtIdxUnlocked(indexElement)
+	isSelected := m.checkSelectedUnlocked(elem.Location)
 	modifyTime := elem.Info.ModTime().Format("2006-01-02 15:04")
 	return common.FilePanelItemRender(
 		modifyTime,
@@ -99,8 +99,8 @@ func (m *Model) renderModifyTime(indexElement int, columnWidth int) string {
 }
 
 func (m *Model) renderPermissions(indexElement int, columnWidth int) string {
-	elem := m.GetElementAtIdx(indexElement)
-	isSelected := m.CheckSelected(elem.Location)
+	elem := m.getElementAtIdxUnlocked(indexElement)
+	isSelected := m.checkSelectedUnlocked(elem.Location)
 	return common.FilePanelItemRender(
 		elem.Info.Mode().String(),
 		columnWidth,
@@ -152,15 +152,15 @@ func (m *Model) makeColumns(columnThreshold int, fileNameRatio int) []columnDefi
 		{
 			Name:         strings.Repeat(" ", ansi.StringWidth(emptyCursor+" ")) + "Name",
 			columnRender: m.renderFileName,
-			Size:         m.GetContentWidth(),
+			Size:         m.contentWidthUnlocked(),
 			HeaderAlign:  lipgloss.Left,
 		},
 	}
 
-	minWidthForNameColumn := int(float64(m.GetContentWidth() * fileNameRatio / common.FileNameRatioMax))
+	minWidthForNameColumn := int(float64(m.contentWidthUnlocked() * fileNameRatio / common.FileNameRatioMax))
 	// Worst case (5 * 100 / 100) could evaluate to 5.0001
 	// Hence, we need this check. Our constraints on Width and ratio guarantee it to be > 0 though
-	minWidthForNameColumn = min(minWidthForNameColumn, m.GetContentWidth())
+	minWidthForNameColumn = min(minWidthForNameColumn, m.contentWidthUnlocked())
 
 	for _, col := range extraColumns[0:maxColumns] {
 		widthExtraColumn := ansi.StringWidth(ColumnDelimiter) + col.Size

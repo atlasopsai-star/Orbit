@@ -62,6 +62,8 @@ func (m *model) Init() tea.Cmd {
 // Update function for bubble tea to provide internal communication to the
 // application
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	slog.Debug("model.Update() called", "msgType", reflect.TypeOf(msg))
 
 	var sidebarCmd, inputCmd, updateCmd, panelCmd,
@@ -101,6 +103,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		updateCmd = m.navigateToSearchResult(msg)
 	case gitStatusMsg:
 		m.applyGitStatus(msg)
+	case navigateToDirMsg:
+		if err := m.updateCurrentFilePanelDir(msg.dir); err != nil {
+			slog.Error("navigateToDirMsg failed", "error", err)
+		}
 	case orbitActionResultMsg:
 		updateCmd = m.applyOrbitActionResult(msg)
 	case ModelUpdateMessage:
@@ -537,6 +543,8 @@ func (m *model) warnModalForQuit() {
 
 // Implement View function for bubble tea model to handle visualization.
 func (m *model) View() tea.View {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	slog.Debug("model.View() called", "mainPanelHeight", m.mainPanelHeight,
 		"footerHeight", m.footerHeight, "fullHeight", m.fullHeight,
 		"fullWidth", m.fullWidth, "panelCount", m.fileModel.PanelCount(),

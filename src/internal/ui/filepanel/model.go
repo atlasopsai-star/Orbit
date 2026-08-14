@@ -3,6 +3,7 @@ package filepanel
 import (
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/common"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
@@ -34,6 +35,7 @@ func defaultFilePanel(path string, focused bool) Model {
 
 func New(location string, focused bool, targetFile string, sortKind sortmodel.SortKind, sortReversed bool) Model {
 	return Model{
+		mu:               new(sync.Mutex),
 		cursor:           0,
 		renderIndex:      0,
 		Location:         location,

@@ -24,10 +24,14 @@ func (m *Model) viewWidth() int {
 }
 
 func (m *Model) GetHeight() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.height
 }
 
 func (m *Model) GetWidth() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.width
 }
 
@@ -43,7 +47,7 @@ func (m *Model) getSortedProcesses() []Process {
 	// have process implement a Less() method, and we can do O(logn) inserts/deletes
 	// To make sure its always stored in an order we want. And then iterate in O(n)
 	// in render()
-	processes := m.GetProcessesSlice()
+	processes := m.getProcessesSliceUnlocked()
 	// sort by the process
 	sort.Slice(processes, func(i, j int) bool {
 		doneI := (processes[i].State == Successful || processes[i].State == Failed)
@@ -69,6 +73,8 @@ func (m *Model) getSortedProcesses() []Process {
 }
 
 func (m *Model) newReqCnt() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.reqCnt++
 	return m.reqCnt
 }
@@ -80,6 +86,12 @@ func (m *Model) newUUIDForProcess() string {
 
 // Copy of the current processes for read only purpose
 func (m *Model) GetProcessesSlice() []Process {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.getProcessesSliceUnlocked()
+}
+
+func (m *Model) getProcessesSliceUnlocked() []Process {
 	var processes []Process
 	for _, p := range m.processes {
 		processes = append(processes, p)

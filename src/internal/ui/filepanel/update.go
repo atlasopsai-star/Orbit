@@ -10,9 +10,12 @@ import (
 )
 
 func (m *Model) ChangeFilePanelMode() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	switch m.PanelMode {
 	case SelectMode:
-		m.ResetSelected()
+		m.selectOrderCounter = 0
+		m.selected = make(map[string]int)
 		m.PanelMode = BrowserMode
 	case BrowserMode:
 		m.PanelMode = SelectMode
@@ -23,6 +26,8 @@ func (m *Model) ChangeFilePanelMode() {
 
 // This should be the function that is always called whenever we are updating a directory.
 func (m *Model) UpdateCurrentFilePanelDir(path string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	slog.Debug("updateCurrentFilePanelDir", "panel.location", m.Location, "path", path)
 	// In case non Absolute path is passed, make sure to resolve it.
 	path = utils.ResolveAbsPath(m.Location, path)
@@ -82,7 +87,9 @@ func (m *Model) ParentDirectory() error {
 
 // Select all item in the file panel (only work on select mode)
 func (m *Model) SelectAllItem() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	for _, item := range m.element {
-		m.SetSelected(item.Location)
+		m.setSelectedUnlocked(item.Location)
 	}
 }

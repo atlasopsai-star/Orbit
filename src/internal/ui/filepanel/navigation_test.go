@@ -1,6 +1,7 @@
 package filepanel
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,7 @@ func testModelWithElemCount(cursor int, renderIndex int, height int, elemCount i
 func testModel(cursor int, renderIndex int, height int, mode PanelMode,
 	elements []Element) Model {
 	return Model{
+		mu:          new(sync.Mutex),
 		element:     elements,
 		cursor:      cursor,
 		renderIndex: renderIndex,

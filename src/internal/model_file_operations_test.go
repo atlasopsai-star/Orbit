@@ -44,7 +44,7 @@ func TestCopy(t *testing.T) {
 		assert.False(t, p.getModel().clipboard.IsCut())
 		assert.Equal(t, file1, p.getModel().clipboard.GetFirstItem())
 
-		p.getModel().updateCurrentFilePanelDir("../dir2")
+		p.NavigateToDir(t, dir2)
 		p.SendKey(common.Hotkeys.PasteItems[0])
 
 		assert.Eventually(t, func() bool {
@@ -97,24 +97,24 @@ func TestFileCreation(t *testing.T) {
 			p.SendKey(common.Hotkeys.FilePanelItemCreate[0])
 
 			require.Eventually(t, func() bool {
-				return m.typingModal.open
+				return m.typingModalOpen()
 			}, DefaultTestTimeout, DefaultTestTick, "Typing modal never opened")
 
 			p.SendKey(tt.fileName)
 			p.SendKey(common.Hotkeys.ConfirmTyping[0])
 
 			require.Eventually(t, func() bool {
-				return !m.typingModal.open
+				return !m.typingModalOpen()
 			}, DefaultTestTimeout, DefaultTestTick, "Typing modal never closed")
 
 			if tt.expectedError {
 				require.Eventually(t, func() bool {
-					return m.spfError.IsOpen()
+					return m.spfErrorIsOpen()
 				}, DefaultTestTimeout, DefaultTestTick, "SPF error modal never opened for input: %q", tt.fileName)
 
 				p.SendKey(common.Hotkeys.Quit[0])
 				require.Eventually(t, func() bool {
-					return !m.spfError.IsOpen()
+					return !m.spfErrorIsOpen()
 				}, DefaultTestTimeout, DefaultTestTick, "SPF error modal never closed")
 				return
 			}
@@ -190,14 +190,14 @@ func TestFileRename(t *testing.T) {
 			p.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 
 			require.Eventually(t, func() bool {
-				return m.notifyModel.IsOpen()
+				return m.notifyModelIsOpen()
 			}, DefaultTestTimeout, DefaultTestTick,
-				"Notify modal never opened, renaming text : %v", m.getFocusedFilePanel().Rename.Value())
+				"Notify modal never opened, renaming text : %v", m.renameValue())
 
 			assert.Equal(t, notify.New(true,
 				common.SameRenameWarnTitle,
 				common.SameRenameWarnContent,
-				notify.RenameAction), m.notifyModel, "Notify model should be as expected")
+				notify.RenameAction), m.getNotifyModel(), "Notify model should be as expected")
 
 			if doRename {
 				p.Send(tea.KeyPressMsg{Code: tea.KeyEnter})

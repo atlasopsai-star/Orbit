@@ -42,9 +42,7 @@ func openZoxide(t *testing.T, p *TeaProg) {
 
 func updateCurrentFilePanelDirOfTestModel(t *testing.T, p *TeaProg, dir string) {
 	t.Helper()
-	err := p.getModel().updateCurrentFilePanelDir(dir)
-	require.NoError(t, err, "Failed to navigate to %s", dir)
-	assert.Equal(t, dir, p.getModel().getFocusedFilePanel().Location, "Should be in %s after navigation", dir)
+	p.NavigateToDir(t, dir)
 }
 
 func TestZoxide(t *testing.T) {

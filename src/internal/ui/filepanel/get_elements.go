@@ -79,13 +79,19 @@ func (m *Model) shouldSkipPanelUpdate(nowTime time.Time) bool {
 		return nowTime.Sub(m.LastTimeGetElement) < nonFocussedPanelReRenderTime
 	}
 
-	reRenderTime := int(float64(m.ElemCount()) / ReRenderChunkDivisor)
+	reRenderTime := int(float64(m.elemCountUnlocked()) / ReRenderChunkDivisor)
 	reRenderTime = min(reRenderTime, ReRenderMaxDelay)
-	return !m.NeedsReRender() &&
+	return !m.needsReRenderUnlocked() &&
 		nowTime.Sub(m.LastTimeGetElement) < time.Duration(reRenderTime)*time.Second
 }
 
 func (m *Model) UpdateElementsIfNeeded(force bool, displayDotFile bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.updateElementsIfNeededUnlocked(force, displayDotFile)
+}
+
+func (m *Model) updateElementsIfNeededUnlocked(force bool, displayDotFile bool) {
 	nowTime := time.Now()
 	if force || !m.shouldSkipPanelUpdate(nowTime) {
 		// Load elements for this panel (with/without search filter)
@@ -99,8 +105,8 @@ func (m *Model) UpdateElementsIfNeeded(force bool, displayDotFile bool) {
 		}
 
 		// If cursor becomes invalid due to element update, reset
-		if m.ValidateCursorAndRenderIndex() != nil {
-			m.scrollToCursor(0)
+		if m.validateCursorAndRenderIndexUnlocked() != nil {
+			m.scrollToCursorUnlocked(0)
 		}
 	}
 }

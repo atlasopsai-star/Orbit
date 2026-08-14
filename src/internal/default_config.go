@@ -2,6 +2,7 @@ package internal
 
 import (
 	zoxidelib "github.com/lazysegtree/go-zoxide"
+	"sync"
 
 	"github.com/atotto/clipboard"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/gitdiff"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 
+	clipboardui "github.com/atlasopsai-star/Orbit/src/internal/ui/clipboard"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/palette"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
@@ -35,8 +37,10 @@ import (
 func defaultModelConfig(toggleDotFile, toggleFooter, firstUse bool,
 	firstPanelPaths []string, zClient *zoxidelib.Client) *model {
 	return &model{
+		mu:              new(sync.Mutex),
 		focusPanel:      nonePanelFocus,
 		processBarModel: processbar.New(),
+		clipboard:       clipboardui.New(),
 		clipboardWriter: clipboard.WriteAll,
 		sidebarModel:    sidebar.New(),
 		fileMetaData:    metadata.New(),

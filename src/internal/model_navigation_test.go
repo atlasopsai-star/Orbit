@@ -196,9 +196,9 @@ func TestCursorOutOfBoundsAfterDirectorySwitch(t *testing.T) {
 	t.Logf("Cursor at position %d with %d elements", panel.GetCursor(), panel.ElemCount())
 
 	// Navigate to dir2 (this saves cursor=8 in directoryRecords)
-	navigateToTargetDir(t, m, dir1, dir2)
+	navigateToTargetDir(t, p, dir1, dir2)
 
-	assert.Equal(t, dir2, m.getFocusedFilePanel().Location, "Should be in dir2")
+	assert.Equal(t, dir2, m.getFocusedFilePanel().GetLocation(), "Should be in dir2")
 	assert.Equal(t, 5, m.getFocusedFilePanel().ElemCount())
 
 	for i := 4; i < 10; i++ {
@@ -208,7 +208,7 @@ func TestCursorOutOfBoundsAfterDirectorySwitch(t *testing.T) {
 	t.Log("Deleted 6 files from dir1 externally")
 
 	// Navigate back to dir1 (this restores cursor=8 from cache)
-	navigateToTargetDir(t, m, dir2, dir1)
+	navigateToTargetDir(t, p, dir2, dir1)
 	assert.Equal(t, 0, panel.GetCursor(), "Cursor not restored as is from directoryRecords cache")
 	assert.NoError(t, panel.ValidateCursorAndRenderIndex(), "panel not valid")
 }

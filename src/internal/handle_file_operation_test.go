@@ -313,7 +313,7 @@ func TestPasteItem(t *testing.T) {
 			m := setupModelAndPerformOperation(t, tt.startDir, tt.selectMode, tt.itemName, tt.selectedItems, tt.isCut)
 			p := NewTestTeaProgWithEventLoop(t, m)
 			// Navigate to target directory
-			navigateToTargetDir(t, m, tt.startDir, tt.targetDir)
+			navigateToTargetDir(t, p, tt.startDir, tt.targetDir)
 
 			// Get original file path for existence check
 			originalPath := getOriginalPath(tt.selectMode, tt.itemName, tt.startDir)
@@ -384,7 +384,7 @@ func TestPasteItem(t *testing.T) {
 		p := NewTestTeaProgWithEventLoop(t, m)
 
 		// Navigate to destination
-		navigateToTargetDir(t, m, sourceDir, destDir)
+		navigateToTargetDir(t, p, sourceDir, destDir)
 
 		// Paste items
 		p.SendKey(common.Hotkeys.PasteItems[0])
@@ -406,7 +406,7 @@ func TestPasteItem(t *testing.T) {
 		p := NewTestTeaProgWithEventLoop(t, m)
 
 		// Navigate into the subdirectory and try to paste there (should be prevented)
-		navigateToTargetDir(t, m, sourceDir, testSubDir)
+		navigateToTargetDir(t, p, sourceDir, testSubDir)
 		p.SendKey(common.Hotkeys.PasteItems[0])
 
 		// Directory should still exist in original location after prevention
@@ -421,7 +421,7 @@ func TestPasteItem(t *testing.T) {
 		m := setupModelAndPerformOperation(t, sourceDir, false, "duplicate.txt", nil, false)
 		p := NewTestTeaProgWithEventLoop(t, m)
 		// Navigate to destination and paste
-		navigateToTargetDir(t, m, sourceDir, destDir)
+		navigateToTargetDir(t, p, sourceDir, destDir)
 		p.SendKey(common.Hotkeys.PasteItems[0])
 
 		// Verify first copy

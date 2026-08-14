@@ -8,6 +8,8 @@ import (
 // There is a shadowing happening here, but it will be removed
 // Once we make footerHeight part of model struct
 func (m *Model) ListUp() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	cntP := m.cntProcesses()
 	if cntP == 0 {
 		return
@@ -27,6 +29,8 @@ func (m *Model) ListUp() {
 
 // Control processbar panel list down
 func (m *Model) ListDown() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	cntP := m.cntProcesses()
 	if cntP == 0 {
 		return

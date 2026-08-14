@@ -23,6 +23,13 @@ const DefaultTestTimeout = time.Second
 const DefaultTestModelWidth = 2 * common.MinimumWidth
 const DefaultTestModelHeight = 2 * common.MinimumHeight
 
+// navigateToDirMsg requests the focused panel to change directory through the
+// tea event loop. Tests must route navigation this way instead of mutating the
+// model directly, because the event loop goroutine touches the same panels.
+type navigateToDirMsg struct {
+	dir string
+}
+
 // -------------------- Model setup utils
 
 func defaultTestModel(dirs ...string) *model {
@@ -205,13 +212,13 @@ func verifySuccessfulPasteResults(t *testing.T, targetDir string, expectedDestFi
 }
 
 // -------------- Other utilities
-// Helper function to navigate to target directory if different from start
-func navigateToTargetDir(t *testing.T, m *model, startDir, targetDir string) {
+// Helper function to navigate to target directory if different from start.
+// Navigation is routed through the tea event loop so tests never mutate the
+// model concurrently with the running event loop goroutine.
+func navigateToTargetDir(t *testing.T, p *TeaProg, startDir, targetDir string) {
 	t.Helper()
 	if targetDir != startDir {
-		err := m.updateCurrentFilePanelDir(targetDir)
-		require.NoError(t, err)
-		TeaUpdate(m, nil)
+		p.NavigateToDir(t, targetDir)
 	}
 }
 

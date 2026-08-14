@@ -57,6 +57,11 @@ const (
 // issues like race conditions and whatnot, which are hidden since we are creating
 // new model in each tea update.
 type model struct {
+	// mu serializes the event loop (Update/View) against concurrent test
+	// access; nested sub-models (panels, processbar, clipboard) guard their own
+	// state. Async processor goroutines never touch this lock.
+	mu *sync.Mutex
+
 	// Main Panels
 	fileModel       filemodel.Model
 	sidebarModel    sidebar.Model

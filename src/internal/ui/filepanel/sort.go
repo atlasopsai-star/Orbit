@@ -146,7 +146,7 @@ func (m *Model) getPageScrollSize() int {
 	scrollSize := common.Config.PageScrollSize
 	if scrollSize <= 0 {
 		// Use default full page behavior
-		scrollSize = m.PanelElementHeight()
+		scrollSize = m.panelElementHeightUnlocked()
 	}
 	return scrollSize
 }

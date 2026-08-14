@@ -2,6 +2,7 @@ package filepanel
 
 import (
 	"os"
+	"sync"
 	"time"
 
 	"charm.land/bubbles/v2/textinput"
@@ -14,6 +15,7 @@ import (
 // zero value `Model{}`, or direct initialization should be avoided
 // or used very carefully if needed
 type Model struct {
+	mu *sync.Mutex
 
 	// Note: We have tried to minimize direct access to cursor,
 	// and read it via GetCursor() at most places, to make it easier
