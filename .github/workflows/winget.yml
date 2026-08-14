@@ -1,19 +1,15 @@
 name: Publish to WinGet
 
-on:
-  release:
-    types: [released]
+# Disabled for Orbit: no public release channel exists in Phase 5.
+on: workflow_dispatch
+
+permissions:
+  contents: read
 
 jobs:
   publish:
-    name: Publish WinGet package
-    runs-on: windows-latest
+    # Deliberately disabled until an Orbit-specific package identity is reviewed.
+    if: ${{ false }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Submit package to Windows Package Manager Community Repository
-        uses: vedantmgoyal2009/winget-releaser@v2
-        with:
-          identifier: yorukot.superfile
-          installers-regex: '\.(zip|msi)$'
-          version: ${{ github.event.release.tag_name }}
-          release-tag: ${{ github.event.release.tag_name }}
-          token: ${{ secrets.WINGET_TOKEN }}
+      - run: echo "Orbit WinGet publication is disabled pending review"

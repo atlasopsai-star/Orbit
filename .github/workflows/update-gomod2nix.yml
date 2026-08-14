@@ -1,33 +1,15 @@
 name: Update gomod2nix.toml
-on:
-  push:
-    paths:
-      - 'go.mod'
-      - 'go.sum'
+
+# Disabled for Orbit until a reviewed, Orbit-owned dependency update workflow exists.
+on: workflow_dispatch
 
 permissions:
- contents: write
+  contents: read
 
 jobs:
- dependabot:
+  dependency-update:
+    # Deliberately disabled: Phase 5 does not authorize automated dependency commits or pushes.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Update checksum
-        run: |
-          nix develop --extra-experimental-features "nix-command flakes" '.#' -c "gomod2nix"
-          # git push if we have a diff
-          if [[ -n $(git diff) ]]; then
-            git config --global user.email "107802416+yorukot@users.noreply.github.com"
-            git config --global user.name "yorukot"
-            git commit -am "chore: update gomod2nix"
-            BRANCH_NAME=$(echo ${{ github.ref }} | sed -e 's/refs\/heads\///g')
-            git push origin HEAD:$BRANCH_NAME
-          fi
-
+      - run: echo "Orbit dependency automation is disabled pending review"

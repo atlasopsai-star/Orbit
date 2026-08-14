@@ -1,24 +1,15 @@
 name: Mirror to Codeberg
+
+# Disabled for Orbit: this inherited workflow targeted Superfile's Codeberg mirror.
+on: workflow_dispatch
+
 permissions:
   contents: read
 
-on: [push]  # Trigger on push to ANY branch
-
-concurrency:
-  group: mirror-codeberg
-  cancel-in-progress: false
-
 jobs:
   mirror:
+    # Deliberately disabled until Orbit has its own reviewed mirror target.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      
-      - uses: yesolutions/mirror-action@master
-        with:
-          REMOTE: 'https://codeberg.org/yorukot/superfile.git'
-          GIT_USERNAME: yorukot
-          GIT_PASSWORD: ${{ secrets.CODEBERG_TOKEN }}
-          PUSH_ALL_REFS: "true"
+      - run: echo "Orbit mirroring is disabled pending review"
