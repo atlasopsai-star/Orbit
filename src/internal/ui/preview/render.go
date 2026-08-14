@@ -1,7 +1,10 @@
 package preview
 
 import (
+	"archive/tar"
+	"archive/zip"
 	"bufio"
+	"compress/gzip"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -64,6 +67,137 @@ func renderDirectoryPreview(r *rendering.Renderer, itemPath string, previewHeigh
 		res := lipgloss.NewStyle().Foreground(lipgloss.Color(style.Color)).Background(common.FilePanelBGColor).
 			Render(style.Icon+" ") + common.FilePanelStyle.Render(file.Name())
 		r.AddLines(res)
+	}
+	return r.Render()
+}
+
+const (
+	maxArchivePreviewEntries = 10_000
+	maxArchivePreviewSize    = 64 * 1024 * 1024
+)
+
+func renderArchivePreview(r *rendering.Renderer, itemPath string, previewHeight int) (string, bool) {
+	info, err := os.Stat(itemPath)
+	if err != nil {
+		return r.AddLines(fmt.Sprintf("Archive preview unavailable: %v", err)).Render(), true
+	}
+	if info.Size() > maxArchivePreviewSize {
+		return r.AddLines(fmt.Sprintf("Archive preview capped — %s archive", common.FormatFileSize(info.Size()))).Render(), true
+	}
+
+	name := strings.ToLower(filepath.Base(itemPath))
+	switch {
+	case strings.HasSuffix(name, ".zip"):
+		return renderZipPreview(r, itemPath, previewHeight), true
+	case strings.HasSuffix(name, ".tar"), strings.HasSuffix(name, ".tar.gz"), strings.HasSuffix(name, ".tgz"):
+		return renderTarPreview(r, itemPath, previewHeight), true
+	default:
+		return "", false
+	}
+}
+
+func renderZipPreview(r *rendering.Renderer, itemPath string, previewHeight int) string {
+	archive, err := zip.OpenReader(itemPath)
+	if err != nil {
+		return r.AddLines(fmt.Sprintf("Archive preview unavailable: %v", err)).Render()
+	}
+	defer archive.Close()
+
+	info, _ := os.Stat(itemPath)
+	size := "unknown size"
+	if info != nil {
+		size = common.FormatFileSize(info.Size())
+	}
+	entryCount := len(archive.File)
+	entrySuffix := ""
+	if entryCount > maxArchivePreviewEntries {
+		entryCount = maxArchivePreviewEntries
+		entrySuffix = "+"
+	}
+	r.AddLines(fmt.Sprintf("ZIP  %s  %d%s entries", size, entryCount, entrySuffix))
+
+	limit := previewHeight - 2
+	if limit < 1 {
+		limit = 1
+	}
+	for index, file := range archive.File {
+		if index >= limit {
+			break
+		}
+		r.AddLines(file.Name)
+	}
+	if len(archive.File) > limit {
+		remaining := len(archive.File) - limit
+		if remaining > maxArchivePreviewEntries {
+			remaining = maxArchivePreviewEntries
+		}
+		r.AddLines(fmt.Sprintf("… %d+ more entries", remaining))
+	}
+	return r.Render()
+}
+
+func renderTarPreview(r *rendering.Renderer, itemPath string, previewHeight int) string {
+	file, err := os.Open(itemPath)
+	if err != nil {
+		return r.AddLines(fmt.Sprintf("Archive preview unavailable: %v", err)).Render()
+	}
+	defer file.Close()
+
+	var input io.Reader = file
+	if strings.HasSuffix(strings.ToLower(itemPath), ".gz") || strings.HasSuffix(strings.ToLower(itemPath), ".tgz") {
+		reader, gzipErr := gzip.NewReader(file)
+		if gzipErr != nil {
+			return r.AddLines(fmt.Sprintf("Archive preview unavailable: %v", gzipErr)).Render()
+		}
+		defer reader.Close()
+		input = reader
+	}
+
+	limit := previewHeight - 2
+	if limit < 1 {
+		limit = 1
+	}
+	entries := 0
+	names := make([]string, 0, limit)
+	truncated := false
+	reader := tar.NewReader(input)
+	for {
+		header, nextErr := reader.Next()
+		if nextErr == io.EOF {
+			break
+		}
+		if nextErr != nil {
+			return r.AddLines(fmt.Sprintf("Archive preview unavailable: %v", nextErr)).Render()
+		}
+		entries++
+		if len(names) < limit {
+			names = append(names, header.Name)
+		}
+		if entries >= maxArchivePreviewEntries {
+			truncated = true
+			break
+		}
+	}
+
+	info, _ := os.Stat(itemPath)
+	size := "unknown size"
+	if info != nil {
+		size = common.FormatFileSize(info.Size())
+	}
+	entryCount := strconv.Itoa(entries)
+	if truncated {
+		entryCount += "+"
+	}
+	r.AddLines(fmt.Sprintf("TAR  %s  %s entries", size, entryCount))
+	for _, name := range names {
+		r.AddLines(name)
+	}
+	if truncated || entries > limit {
+		remaining := entries - limit
+		if remaining < 0 {
+			remaining = 0
+		}
+		r.AddLines(fmt.Sprintf("… %d+ more entries", remaining))
 	}
 	return r.Render()
 }
@@ -259,6 +393,10 @@ func (m *Model) RenderWithPath(
 
 	if fileInfo.IsDir() {
 		return renderDirectoryPreview(r, itemPath, contentHeight), kittyClear
+	}
+
+	if archive, ok := renderArchivePreview(r, itemPath, contentHeight); ok {
+		return archive, kittyClear
 	}
 
 	if m.thumbnailGenerator != nil && m.thumbnailGenerator.SupportsExt(ext) {
