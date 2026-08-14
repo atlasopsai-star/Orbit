@@ -325,6 +325,12 @@ func (m *Model) renderTextPreview(r *rendering.Renderer, itemPath string,
 		}
 	}
 
+	// READMEs and Markdown docs get the rendered Markdown preview instead of a
+	// raw text dump.
+	if isMarkdownFile(itemPath) {
+		return renderMarkdownPreview(r, itemPath, previewWidth, previewHeight)
+	}
+
 	fileContent, err := utils.ReadFileContent(itemPath, previewWidth, previewHeight)
 	if err != nil {
 		slog.Error("Error open file", "error", err)
