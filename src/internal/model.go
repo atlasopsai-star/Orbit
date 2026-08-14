@@ -355,6 +355,14 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 	// If search bar is open
 	case m.getFocusedFilePanel().SearchBar.Focused():
 		m.focusOnSearchbarKey(msg.String())
+	// A confirmed search left a filter active on the focused panel (bar blurred
+	// but query non-empty). Esc/Ctrl+C clears the filter instead of falling
+	// through to the Quit hotkey, which would otherwise exit the whole app. The
+	// sidebar-search guard keeps the sidebar case below authoritative when its
+	// own search bar is focused.
+	case slices.Contains(common.Hotkeys.CancelTyping, msg.String()) &&
+		!m.sidebarModel.SearchBarFocused() && m.getFocusedFilePanel().SearchFilterActive():
+		m.cancelSearch()
 	// If sort options menu is open
 	case m.sidebarModel.SearchBarFocused():
 		m.sidebarModel.HandleSearchBarKey(msg.String())

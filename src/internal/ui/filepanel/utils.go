@@ -224,6 +224,17 @@ func (m *Model) EmptyOrInvalid() bool {
 	return m.emptyOrInvalidUnlocked()
 }
 
+// SearchFilterActive reports whether this panel currently has a confirmed search
+// filter applied: the search bar is not focused (the user already pressed Enter)
+// but still holds a non-empty query. The caller uses this to let Esc/Ctrl+C clear
+// the filter instead of quitting the app. The textinput state is read under the
+// panel lock so it never races with other goroutines.
+func (m *Model) SearchFilterActive() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return !m.SearchBar.Focused() && m.SearchBar.Value() != ""
+}
+
 func (m *Model) emptyOrInvalidUnlocked() bool {
 	return m.emptyUnlocked() || m.validateCursorAndRenderIndexUnlocked() != nil
 }

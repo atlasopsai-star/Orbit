@@ -9,8 +9,6 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/charmbracelet/x/ansi"
-
 	"github.com/atlasopsai-star/Orbit/src/pkg/utils"
 
 	"github.com/stretchr/testify/assert"
@@ -292,17 +290,48 @@ func TestChooserFile(t *testing.T) {
 	}
 }
 
-func eventuallyEnsurePreviewContent(t *testing.T, m *model, content string, msgAndArgs ...any) {
-	contains := false
-	assert.Eventually(t, func() bool {
-		contains = strings.Contains(m.previewContent(), content)
-		return contains
-	}, DefaultTestTimeout, DefaultTestTick, msgAndArgs...)
-	if !contains {
-		pContent := ansi.Strip(m.previewContent())
-		pContent = pContent[:min(len(pContent), 20)]
-		t.Logf("%s was not found in '%s'", content, pContent)
+// Regression test for the search/Esc UX trap: after confirming a search that
+// leaves a filter active (bar blurred, query non-empty), Esc must clear the
+// filter instead of falling through to the Quit hotkey and exiting the app.
+func TestEscClearsConfirmedSearchFilterInsteadOfQuitting(t *testing.T) {
+	curTestDir := t.TempDir()
+	for _, name := range []string{"aaa.txt", "bbb.txt", "ccc.txt"} {
+		utils.SetupFiles(t, filepath.Join(curTestDir, name))
 	}
+
+	m := defaultTestModel(curTestDir)
+
+	// Focus the search bar with the SearchBar hotkey and type a query that
+	// matches nothing.
+	TeaUpdate(m, utils.TeaRuneKeyMsg(common.Hotkeys.SearchBar[0]))
+	panel := m.getFocusedFilePanel()
+	require.True(t, panel.SearchBar.Focused())
+	panel.SearchBar.SetValue("zzznomatch")
+
+	// Enter confirms the search: the bar blurs but the filter stays active.
+	TeaUpdate(m, tea.KeyPressMsg{Code: tea.KeyEnter})
+	require.True(t, panel.SearchFilterActive())
+
+	// Esc must now clear the filter, not quit.
+	cmd := TeaUpdate(m, tea.KeyPressMsg{Code: tea.KeyEsc})
+	require.False(t, panel.SearchFilterActive())
+	assert.Equal(t, "", panel.SearchBar.Value())
+	assert.Equal(t, notQuitting, m.modelQuitState)
+	assert.False(t, IsTeaQuit(cmd))
+
+	// With no filter active a second Esc falls through to the Quit hotkey.
+	cmd = TeaUpdate(m, tea.KeyPressMsg{Code: tea.KeyEsc})
+	assert.Equal(t, quitDone, m.modelQuitState)
+	assert.True(t, IsTeaQuit(cmd))
+}
+
+func eventuallyEnsurePreviewContent(t *testing.T, m *model, content string, msgAndArgs ...any) {
+	// The condition must not share a captured variable with this goroutine;
+	// testify's Eventually polls it from another goroutine, so a shared bool
+	// would itself be a data race.
+	require.Eventually(t, func() bool {
+		return strings.Contains(m.previewContent(), content)
+	}, DefaultTestTimeout, DefaultTestTick, msgAndArgs...)
 }
 
 func TestAsyncPreviewPanelSync(t *testing.T) {
