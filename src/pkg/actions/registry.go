@@ -12,6 +12,7 @@ type Context struct {
 	IsMac            bool
 	HasTrash         bool
 	AvailableApps    map[string]bool
+	GitStatus        string
 }
 
 type Action struct {
@@ -42,7 +43,12 @@ func all(ctx Context) []Action {
 		{ID: "duplicate", Label: "Duplicate", Description: "Create a safe copy without overwriting", Category: "File", Keywords: []string{"copy", "clone"}, Available: func(Context) bool { return ctx.SelectedPath != "" }},
 		{ID: "folder-size", Label: "Calculate Folder Size", Description: "Scan the selected folder asynchronously", Category: "Utility", Keywords: []string{"size", "disk", "storage"}, Available: func(Context) bool { return ctx.IsDirectory }},
 		{ID: "compress", Label: "Compress", Description: "Create an archive from the selected item", Category: "Utility", Keywords: []string{"archive", "zip"}, Available: func(Context) bool { return ctx.SelectedPath != "" }},
-		{ID: "extract", Label: "Extract", Description: "Extract the selected archive", Category: "Utility", Keywords: []string{"archive", "unzip"}, Available: func(Context) bool { return ctx.SelectedPath != "" && !ctx.IsDirectory && isArchive(ctx.SelectedPath) }},
+		{ID: "extract", Label: "Extract", Description: "Extract the selected archive", Category: "Utility", Keywords: []string{"archive", "unzip"}, Available: func(ctx Context) bool {
+			return ctx.SelectedPath != "" && !ctx.IsDirectory && isArchive(ctx.SelectedPath)
+		}},
+		{ID: "git-diff", Label: "View Git Diff", Description: "Show the selected file's unstaged diff", Category: "Git", Keywords: []string{"git", "changes", "modified"}, Available: func(ctx Context) bool {
+			return ctx.SelectedPath != "" && !ctx.IsDirectory && ctx.GitStatus != "" && ctx.GitStatus != "?"
+		}},
 		{ID: "search-files", Label: "Search Current Directory", Description: "Filter the current directory by filename", Category: "Search", Keywords: []string{"find"}, Available: func(Context) bool { return ctx.CurrentDirectory != "" }},
 		{ID: "search-recursive", Label: "Search Descendants", Description: "Search descendant filenames", Category: "Search", Keywords: []string{"find", "recursive"}, Available: func(Context) bool { return ctx.CurrentDirectory != "" }},
 		{ID: "search-content", Label: "Search File Contents", Description: "Search text inside descendant files", Category: "Search", Keywords: []string{"grep", "content", "text"}, Available: func(Context) bool { return ctx.CurrentDirectory != "" }},

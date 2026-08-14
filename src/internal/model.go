@@ -65,7 +65,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	slog.Debug("model.Update() called", "msgType", reflect.TypeOf(msg))
 
 	var sidebarCmd, inputCmd, updateCmd, panelCmd,
-		metadataCmd, filePreviewCmd, helpMenuCmd, resizeCmd tea.Cmd
+		metadataCmd, filePreviewCmd, helpMenuCmd, resizeCmd, gitCmd tea.Cmd
 
 	// These are above the key message handing to prevent issues with firstKeyInput
 	// if someone presses `/` to focus to searchBar, searchBar will otherwise
@@ -97,6 +97,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		updateCmd = m.executeOrbitAction(msg.ID)
 	case searchui.ResultMsg:
 		m.searchModal.Apply(msg)
+	case searchui.SelectedMsg:
+		updateCmd = m.navigateToSearchResult(msg)
+	case gitStatusMsg:
+		m.applyGitStatus(msg)
+	case orbitActionResultMsg:
+		updateCmd = m.applyOrbitActionResult(msg)
 	case ModelUpdateMessage:
 		slog.Debug("Got ModelUpdate message", "id", msg.GetReqID())
 		updateCmd = msg.ApplyToModel(m)
@@ -112,9 +118,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	filePreviewCmd = m.fileModel.GetFilePreviewCmd(false)
 
 	metadataCmd = m.getMetadataCmd()
+	gitCmd = m.refreshGitStatusCmd()
 
 	return m, tea.Batch(sidebarCmd, helpMenuCmd, inputCmd, updateCmd,
-		panelCmd, metadataCmd, filePreviewCmd, resizeCmd)
+		panelCmd, metadataCmd, filePreviewCmd, resizeCmd, gitCmd)
 }
 
 func (m *model) handleMouseMsg(msg tea.MouseMsg) {
@@ -304,6 +311,10 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 		cmd = m.actionPalette.HandleKey(msg.String())
 	case m.searchModal.IsOpen():
 		cmd = m.searchModal.HandleKey(msg.String())
+	case m.folderSizeModal.IsOpen():
+		cmd = m.folderSizeModal.HandleKey(msg.String())
+	case m.gitDiffModal.IsOpen():
+		cmd = m.gitDiffModal.HandleKey(msg.String())
 	case m.spfError.IsOpen():
 		cmd = m.spfErrorModelOpenKey(msg.String())
 	case m.typingModal.open:
@@ -338,10 +349,6 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 		m.helpMenu.HandleKey(msg.String())
 
 	case slices.Contains(common.Hotkeys.Quit, msg.String()):
-		if m.orbitSizeCancel != nil {
-			m.orbitSizeCancel()
-			m.orbitSizeCancel = nil
-		}
 		m.modelQuitState = quitInitiated
 
 	case slices.Contains(common.Hotkeys.CdQuit, msg.String()):
@@ -382,6 +389,10 @@ func (m *model) updateComponentState(msg tea.Msg) tea.Cmd {
 		cmd = m.actionPalette.Update(msg)
 	case m.searchModal.IsOpen():
 		cmd = m.searchModal.Update(msg)
+	case m.folderSizeModal.IsOpen():
+		cmd = m.folderSizeModal.Update(msg)
+	case m.gitDiffModal.IsOpen():
+		cmd = m.gitDiffModal.Update(msg)
 	case m.firstTextInput:
 		m.firstTextInput = false
 	case m.fileModel.Renaming:
@@ -535,8 +546,12 @@ func (m *model) viewContent() string {
 		return "Loading..."
 	}
 
-	// check is the terminal size enough
+	// Keep the file browser honest at very small sizes, but still allow the
+	// keyboard-first overlays to operate in a compact layout.
 	if m.fullHeight < common.MinimumHeight || m.fullWidth < common.MinimumWidth {
+		if m.actionPalette.IsOpen() || m.searchModal.IsOpen() || m.folderSizeModal.IsOpen() || m.gitDiffModal.IsOpen() {
+			return m.updateRenderForOverlay(m.compactOverlayBackground())
+		}
 		return m.terminalSizeWarnRender()
 	}
 	if m.fileModel.SinglePanelWidth < filepanel.MinWidth {
@@ -554,19 +569,35 @@ func (m *model) viewContent() string {
 
 func (m *model) updateRenderForOverlay(finalRender string) string {
 	if m.actionPalette.IsOpen() {
-		m.actionPalette.SetDimensions(maxOrbit(56, m.fullWidth-8), maxOrbit(16, m.fullHeight-4))
+		m.actionPalette.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(24, maxOrbit(8, m.fullHeight-2)))
 		overlay := m.actionPalette.View()
-		overlayX := m.fullWidth/common.CenterDivisor - lipgloss.Width(overlay)/common.CenterDivisor
-		overlayY := m.fullHeight/common.CenterDivisor - strings.Count(overlay, "\n")/common.CenterDivisor
+		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
+		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\n")/common.CenterDivisor)
 		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
 	}
 
 	// check if need pop up modal
 	if m.searchModal.IsOpen() {
-		m.searchModal.SetDimensions(minOrbit(72, maxOrbit(20, m.fullWidth-4)), minOrbit(24, maxOrbit(10, m.fullHeight-2)))
+		m.searchModal.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(24, maxOrbit(8, m.fullHeight-2)))
 		overlay := m.searchModal.View()
-		overlayX := m.fullWidth/common.CenterDivisor - lipgloss.Width(overlay)/common.CenterDivisor
-		overlayY := m.fullHeight/common.CenterDivisor - strings.Count(overlay, "\n")/common.CenterDivisor
+		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
+		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\n")/common.CenterDivisor)
+		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+	}
+
+	if m.folderSizeModal.IsOpen() {
+		m.folderSizeModal.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(22, maxOrbit(8, m.fullHeight-2)))
+		overlay := m.folderSizeModal.View()
+		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
+		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\\n")/common.CenterDivisor)
+		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+	}
+
+	if m.gitDiffModal.IsOpen() {
+		m.gitDiffModal.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(26, maxOrbit(8, m.fullHeight-2)))
+		overlay := m.gitDiffModal.View()
+		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
+		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\\n")/common.CenterDivisor)
 		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
 	}
 

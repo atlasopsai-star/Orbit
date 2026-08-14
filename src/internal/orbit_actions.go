@@ -1,14 +1,15 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/atlasopsai-star/Orbit/src/internal/common"
 	"github.com/atlasopsai-star/Orbit/src/internal/trash"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
 	"github.com/atlasopsai-star/Orbit/src/pkg/actions"
@@ -20,26 +21,20 @@ type orbitActionResultMsg struct {
 	message string
 	err     error
 }
-type orbitFolderSizeMsg struct {
-	path    string
-	request uint64
-	result  orbitfs.SizeResult
-	err     error
-}
 
 func (m *model) orbitActionContext() actions.Context {
 	path, directory, isDir := m.selectedOrbitPath()
 	apps := map[string]bool{}
-	for _, name := range []string{"Cursor", "Visual Studio Code", "Zed", "Xcode"} {
+	for _, name := range []string{"Cursor", "Visual Studio Code", "Zed", "Xcode", "Terminal", "iTerm2", "Ghostty", "Warp"} {
 		apps[name] = orbitAppAvailable(name)
 	}
 	hasTrash := directory != "" && m.hasTrash && trash.Available(directory)
-	return actions.Context{SelectedPath: path, CurrentDirectory: directory, IsDirectory: isDir, IsMac: runtime.GOOS == "darwin", HasTrash: hasTrash, AvailableApps: apps}
+	return actions.Context{SelectedPath: path, CurrentDirectory: directory, IsDirectory: isDir, IsMac: runtime.GOOS == "darwin", HasTrash: hasTrash, AvailableApps: apps, GitStatus: m.gitStatus.Files[path]}
 }
 
 func (m *model) openOrbitActionPalette() tea.Cmd {
 	m.actionPalette.SetActions(actions.Default(m.orbitActionContext()))
-	m.actionPalette.SetDimensions(minOrbit(72, maxOrbit(20, m.fullWidth-4)), minOrbit(24, maxOrbit(10, m.fullHeight-2)))
+	m.actionPalette.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(24, maxOrbit(8, m.fullHeight-2)))
 	return m.actionPalette.Open()
 }
 
@@ -57,7 +52,16 @@ func orbitAppAvailable(name string) bool {
 	if runtime.GOOS != "darwin" {
 		return false
 	}
-	commands := map[string]string{"Cursor": "cursor", "Visual Studio Code": "code", "Zed": "zed", "Xcode": "xed"}
+	commands := map[string]string{
+		"Cursor":             "cursor",
+		"Visual Studio Code": "code",
+		"Zed":                "zed",
+		"Xcode":              "xed",
+		"Terminal":           "",
+		"iTerm2":             "",
+		"Ghostty":            "",
+		"Warp":               "",
+	}
 	if command := commands[name]; command != "" {
 		if _, err := exec.LookPath(command); err == nil {
 			return true
@@ -67,8 +71,13 @@ func orbitAppAvailable(name string) bool {
 	if err != nil {
 		return false
 	}
-	for _, root := range []string{"/Applications", filepath.Join(home, "Applications")} {
-		if _, err := os.Stat(filepath.Join(root, name+".app")); err == nil {
+	appNames := map[string]string{"iTerm2": "iTerm", "Terminal": "Terminal"}
+	appName := appNames[name]
+	if appName == "" {
+		appName = name
+	}
+	for _, root := range []string{"/Applications", "/System/Applications", filepath.Join(home, "Applications")} {
+		if _, err := os.Stat(filepath.Join(root, appName+".app")); err == nil {
 			return true
 		}
 	}
@@ -82,7 +91,12 @@ func (m *model) executeOrbitAction(id string) tea.Cmd {
 	}
 	switch id {
 	case "open":
-		return orbitActionCommand("Open", "Opened "+filepath.Base(path), func() error { return orbitOpen(path) })
+		return orbitActionCommand("Open", "Opened "+filepath.Base(path), func() error {
+			if runtime.GOOS == "darwin" && common.Config.PreferredEditor != "" {
+				return runOrbitCommand("open", "-a", common.Config.PreferredEditor, path)
+			}
+			return orbitOpen(path)
+		})
 	case "reveal-finder":
 		return orbitActionCommand("Finder", "Revealed "+filepath.Base(path)+" in Finder", func() error { return runOrbitCommand("open", "-R", path) })
 	case "open-terminal":
@@ -90,7 +104,8 @@ func (m *model) executeOrbitAction(id string) tea.Cmd {
 		if !isDir {
 			target = directory
 		}
-		return orbitActionCommand("Terminal", "Opened Terminal at "+target, func() error { return runOrbitCommand("open", "-a", "Terminal", target) })
+		terminal, args := orbitTerminalCommand(target, common.Config.PreferredTerminal)
+		return orbitActionCommand("Terminal", "Opened "+terminal+" at "+target, func() error { return runOrbitCommand(terminal, args...) })
 	case "open-cursor":
 		return orbitActionCommand("Cursor", "Opened "+filepath.Base(path)+" in Cursor", func() error { return runOrbitCommand("open", "-a", "Cursor", path) })
 	case "open-vscode":
@@ -119,21 +134,13 @@ func (m *model) executeOrbitAction(id string) tea.Cmd {
 			return orbitActionResultMsg{title: "Duplicate", message: "Created " + filepath.Base(destination), err: err}
 		}
 	case "folder-size":
-		if m.orbitSizeCancel != nil {
-			m.orbitSizeCancel()
-		}
-		ctx, cancel := context.WithCancel(context.Background())
-		m.orbitSizeCancel = cancel
-		m.orbitSizeRequest++
-		request := m.orbitSizeRequest
-		return func() tea.Msg {
-			result, err := orbitfs.DirectorySize(ctx, path)
-			return orbitFolderSizeMsg{path: path, request: request, result: result, err: err}
-		}
+		return m.folderSizeModal.Open(path, false)
 	case "compress":
 		return m.getCompressSelectedFilesCmd()
 	case "extract":
 		return m.getExtractFileCmd()
+	case "git-diff":
+		return m.openGitDiff(path)
 	case "search-files":
 		m.searchBarFocus()
 	case "search-recursive":
@@ -152,6 +159,23 @@ func orbitActionResult(err error) tea.Cmd {
 }
 func orbitPathExists(path string) bool                  { _, err := os.Lstat(path); return err == nil }
 func runOrbitCommand(name string, args ...string) error { return exec.Command(name, args...).Run() }
+
+func orbitTerminalCommand(path, preferred string) (string, []string) {
+	app := "Terminal"
+	switch strings.ToLower(strings.TrimSpace(preferred)) {
+	case "iterm2", "iterm":
+		app = "iTerm"
+	case "ghostty":
+		app = "Ghostty"
+	case "warp":
+		app = "Warp"
+	case "terminal", "":
+	default:
+		// Unknown preferences intentionally fall back to Terminal.app.
+	}
+	return "open", []string{"-a", app, path}
+}
+
 func orbitOpen(path string) error {
 	if runtime.GOOS == "darwin" {
 		return runOrbitCommand("open", path)
@@ -165,35 +189,10 @@ func (m *model) applyOrbitActionResult(msg orbitActionResultMsg) tea.Cmd {
 		return nil
 	}
 	m.notifyModel = notify.New(true, msg.title, msg.message, notify.NoAction)
+	m.invalidateGitStatus()
 	return nil
 }
 
-func (m *model) applyOrbitFolderSize(msg orbitFolderSizeMsg) tea.Cmd {
-	if msg.request != m.orbitSizeRequest {
-		return nil
-	}
-	m.orbitSizeCancel = nil
-	if msg.err != nil {
-		m.notifyModel = notify.New(true, "Folder size", fmt.Sprintf("Could not scan %s: %v", filepath.Base(msg.path), msg.err), notify.NoAction)
-		return nil
-	}
-	m.notifyModel = notify.New(true, "Folder size", fmt.Sprintf("%s  %s\n%d files  %d folders", filepath.Base(msg.path), formatOrbitBytes(msg.result.Bytes), msg.result.Files, msg.result.Directories), notify.NoAction)
-	return nil
-}
-
-func formatOrbitBytes(size int64) string {
-	units := []string{"B", "KB", "MB", "GB", "TB"}
-	value := float64(size)
-	unit := 0
-	for value >= 1024 && unit < len(units)-1 {
-		value /= 1024
-		unit++
-	}
-	if unit == 0 {
-		return fmt.Sprintf("%d %s", size, units[unit])
-	}
-	return fmt.Sprintf("%.2f %s", value, units[unit])
-}
 func maxOrbit(a, b int) int {
 	if a > b {
 		return a

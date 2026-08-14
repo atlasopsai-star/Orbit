@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/atlasopsai-star/Orbit/src/pkg/actions"
 )
 
@@ -37,6 +38,16 @@ func TestPaletteSelectionAndClose(t *testing.T) {
 	msg := cmd().(ActionSelectedMsg)
 	if msg.ID != "finder" {
 		t.Fatalf("selected = %#v", msg)
+	}
+}
+
+func TestPaletteFitsNarrowDimensions(t *testing.T) {
+	m := New()
+	m.SetActions(testActions())
+	m.SetDimensions(20, 10)
+	m.Open()
+	if width := lipgloss.Width(m.View()); width > 20 {
+		t.Fatalf("palette width=%d", width)
 	}
 }
 

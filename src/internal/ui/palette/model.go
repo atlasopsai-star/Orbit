@@ -39,7 +39,7 @@ func (m *Model) SetDimensions(width, height int) {
 	if height > 0 {
 		m.height = height
 	}
-	m.input.SetWidth(max(20, m.width-8))
+	m.input.SetWidth(max(8, m.width-8))
 }
 func (m *Model) Open() tea.Cmd {
 	m.open = true
@@ -113,7 +113,8 @@ func (m Model) View() string {
 		return ""
 	}
 	items := m.Filtered()
-	maxRows := max(3, m.height-7)
+	maxRows := max(1, m.height-7)
+	compact := m.width < 64 || m.height < 16
 	lines := []string{"ORBIT ACTIONS", "> " + m.input.View(), ""}
 	if len(items) == 0 {
 		lines = append(lines, "No matching actions", "Try: finder, cursor, path, size")
@@ -123,14 +124,22 @@ func (m Model) View() string {
 			if index == m.cursor {
 				prefix = "› "
 			}
+			if compact {
+				lines = append(lines, prefix+item.Label)
+				continue
+			}
 			lines = append(lines, prefix+item.Label+"  "+lipgloss.NewStyle().Faint(true).Render(item.Category), "    "+item.Description)
 		}
 		if len(items) > maxRows {
 			lines = append(lines, fmt.Sprintf("  +%d more", len(items)-maxRows))
 		}
 	}
-	lines = append(lines, "", "↑↓ navigate  Enter run  Esc close")
-	return lipgloss.NewStyle().Width(max(20, m.width-2)).Padding(1, 2).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("#F6C453")).Render(strings.Join(lines, "\n"))
+	footer := "↑↓ navigate  Enter run  Esc close"
+	if compact {
+		footer = "Enter run  Esc close"
+	}
+	lines = append(lines, "", footer)
+	return lipgloss.NewStyle().Width(max(1, m.width-6)).Padding(1, 2).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("#F6C453")).Render(strings.Join(lines, "\n"))
 }
 
 func max(a, b int) int {

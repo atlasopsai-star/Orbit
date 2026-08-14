@@ -3,6 +3,7 @@ package internal
 import (
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/common"
 
@@ -18,6 +19,13 @@ func (m *model) sidebarRender() string {
 
 func (m *model) processBarRender() string {
 	return m.processBarModel.Render(m.focusPanel == processBarFocus)
+}
+
+func (m *model) compactOverlayBackground() string {
+	width := maxOrbit(1, m.fullWidth)
+	height := maxOrbit(1, m.fullHeight)
+	line := strings.Repeat(" ", width)
+	return strings.TrimSuffix(strings.Repeat(line+"\n", height), "\n")
 }
 
 func (m *model) terminalSizeWarnRender() string {

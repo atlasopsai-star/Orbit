@@ -34,8 +34,13 @@ func (m *Model) Render(focused bool) string {
 }
 
 func (m *Model) renderTopBar(r *rendering.Renderer) {
-	// TODO - Add ansitruncate left in renderer and remove truncation here
-	truncatedPath := common.TruncateTextBeginning(m.Location, m.GetContentWidth()-common.InnerPadding, "...")
+	// Keep repository context compact and only show it when the async Git
+	// snapshot confirms that this panel is inside a repository.
+	label := m.Location
+	if m.GitBranch != "" {
+		label += "  ⎇ " + m.GitBranch
+	}
+	truncatedPath := common.TruncateTextBeginning(label, m.GetContentWidth()-common.InnerPadding, "...")
 	r.AddLines(common.FilePanelTopDirectoryIcon + common.FilePanelTopPathStyle.Render(truncatedPath))
 	r.AddSection()
 }
@@ -60,13 +65,37 @@ func (m *Model) renderFooter(r *rendering.Renderer, selectedCount uint) {
 	}
 
 	if common.Config.ShowPanelFooterInfo {
-		r.SetBorderInfoItems(sortLabel, modeLabel, cursorStr)
+		hints := ""
+		actionsKey := firstHotkey(common.Hotkeys.OpenCommandPalette, "ctrl+k")
+		searchKey := firstHotkey(common.Hotkeys.SearchBar, "/")
+		previewKey := firstHotkey(common.Hotkeys.ToggleFilePreviewPanel, "f")
+		helpKey := firstHotkey(common.Hotkeys.OpenHelpMenu, "?")
+		switch {
+		case m.width >= 100:
+			hints = fmt.Sprintf("%s Actions  %s Search  %s Preview  %s Help", actionsKey, searchKey, previewKey, helpKey)
+		case m.width >= 70:
+			hints = fmt.Sprintf("%s Actions  %s Search  %s Help", actionsKey, searchKey, helpKey)
+		case m.width >= 48:
+			hints = fmt.Sprintf("%s Actions  %s Search", actionsKey, searchKey)
+		}
+		if hints != "" {
+			r.SetBorderInfoItems(sortLabel, modeLabel, cursorStr, hints)
+		} else {
+			r.SetBorderInfoItems(sortLabel, modeLabel, cursorStr)
+		}
 		if r.AreInfoItemsTruncated() {
 			r.SetBorderInfoItems(sortIcon, modeIcon, cursorStr)
 		}
 	} else {
 		r.SetBorderInfoItems(cursorStr)
 	}
+}
+
+func firstHotkey(hotkeys []string, fallback string) string {
+	if len(hotkeys) == 0 || hotkeys[0] == "" {
+		return fallback
+	}
+	return hotkeys[0]
 }
 
 func (m *Model) renderColumnHeaders(r *rendering.Renderer) {

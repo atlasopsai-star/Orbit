@@ -21,9 +21,13 @@ func (m *Model) renderFileName(indexElement int, columnWidth int) string {
 	}
 
 	selectBox := m.renderSelectBox(isSelected)
+	gitMark := ""
+	if status := m.GitStatus[elem.Location]; status != "" {
+		gitMark = gitStatusStyle(status).Render(status + " ")
+	}
 
 	// Calculate the actual prefix width for proper alignment
-	prefixWidth := ansi.StringWidth(cursor+" ") + ansi.StringWidth(selectBox)
+	prefixWidth := ansi.StringWidth(cursor+" ") + ansi.StringWidth(selectBox) + ansi.StringWidth(gitMark)
 	isLink := false
 	if elem.Info != nil {
 		isLink = elem.Info.Mode()&os.ModeSymlink != 0
@@ -36,10 +40,23 @@ func (m *Model) renderFileName(indexElement int, columnWidth int) string {
 		isSelected,
 		common.FilePanelBGColor,
 	)
-	return common.FilePanelCursorStyle.Render(cursor+" ") + selectBox + renderedName
+	return common.FilePanelCursorStyle.Render(cursor+" ") + selectBox + gitMark + renderedName
 }
 
 // The renderer of delimiter spaces. It has a strict fixed size that depends only on the delimiter string.
+func gitStatusStyle(status string) lipgloss.Style {
+	switch status {
+	case "?":
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("#6EE7F9"))
+	case "A":
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("#7EE787"))
+	case "D", "U":
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("#FF6B81"))
+	default:
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("#F6C453"))
+	}
+}
+
 func (m *Model) renderDelimiter(indexElement int, columnWidth int) string {
 	isSelected := m.CheckSelected(m.GetElementAtIdx(indexElement).Location)
 	return common.FilePanelItemRender(

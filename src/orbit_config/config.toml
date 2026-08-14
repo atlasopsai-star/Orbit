@@ -16,8 +16,17 @@
 editor = ""
 
 #-- Directory Editor
-# 
+#
 dir_editor = ""
+
+#-- Preferred macOS editor
+# Optional app name used by Orbit's generic Open action, such as Cursor, Zed,
+# Visual Studio Code, or Xcode.
+preferred_editor = ""
+
+#-- Preferred macOS terminal
+# Accepted values: terminal, iterm2, ghostty, warp. Empty uses Terminal.app.
+preferred_terminal = ""
 
 #-- Auto check for update
 auto_check_update = false

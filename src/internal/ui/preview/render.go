@@ -1,15 +1,20 @@
 package preview
 
 import (
+	"bufio"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"image"
+	"io"
 	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"slices"
 	"sort"
+	"strconv"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 	"github.com/alecthomas/chroma/v2/lexers"
@@ -30,6 +35,10 @@ func renderDirectoryPreview(r *rendering.Renderer, itemPath string, previewHeigh
 		return r.Render()
 	}
 
+	info, _ := os.Stat(itemPath)
+	if info != nil {
+		r.AddLines(fmt.Sprintf("Directory  %d items  Modified %s", len(files), info.ModTime().Format("2006-01-02 15:04")))
+	}
 	if len(files) == 0 {
 		r.AddLines(common.FilePreviewEmptyText)
 		return r.Render()
@@ -117,6 +126,14 @@ func (m *Model) renderTextPreview(r *rendering.Renderer, itemPath string,
 		return r.AddLines(common.FilePreviewEmptyText).Render()
 	}
 
+	if fileInfo, statErr := os.Stat(itemPath); statErr == nil && fileInfo.Size() > maxPreviewFileSize {
+		r.AddLines(fmt.Sprintf("Preview truncated — %s file", common.FormatFileSize(fileInfo.Size())))
+	}
+
+	if isDelimitedPreview(itemPath) {
+		return renderDelimitedPreview(r, itemPath, previewHeight)
+	}
+
 	if format != nil {
 		background := ""
 		if !common.Config.TransparentBackground {
@@ -138,6 +155,49 @@ func (m *Model) renderTextPreview(r *rendering.Renderer, itemPath string,
 	}
 
 	r.AddLines(fileContent)
+	return r.Render()
+}
+
+const maxPreviewFileSize int64 = 8 * 1024 * 1024
+
+func isDelimitedPreview(path string) bool {
+	ext := strings.ToLower(filepath.Ext(path))
+	return ext == ".csv" || ext == ".tsv"
+}
+
+func renderDelimitedPreview(r *rendering.Renderer, itemPath string, previewHeight int) string {
+	file, err := os.Open(itemPath)
+	if err != nil {
+		return r.AddLines(renderPreviewError(err)).Render()
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(bufio.NewReader(io.LimitReader(file, 256*1024)))
+	reader.Comma = ','
+	if strings.EqualFold(filepath.Ext(itemPath), ".tsv") {
+		reader.Comma = '\t'
+	}
+	reader.FieldsPerRecord = -1
+	rows := max(1, previewHeight-2)
+	for index := 0; index < rows; index++ {
+		record, readErr := reader.Read()
+		if readErr == io.EOF {
+			break
+		}
+		if readErr != nil {
+			r.AddLines(fmt.Sprintf("CSV preview stopped at row %d: %v", index+1, readErr))
+			break
+		}
+		values := make([]string, 0, min(len(record), 8))
+		for _, value := range record[:min(len(record), 8)] {
+			runes := []rune(value)
+			if len(runes) > 32 {
+				value = string(runes[:29]) + "..."
+			}
+			values = append(values, value)
+		}
+		r.AddLines(fmt.Sprintf("%3s  %s", strconv.Itoa(index+1), strings.Join(values, " │ ")))
+	}
 	return r.Render()
 }
 

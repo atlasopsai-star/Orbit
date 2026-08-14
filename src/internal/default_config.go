@@ -8,6 +8,8 @@ import (
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/helpmenu"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/filemodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/foldersize"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/gitdiff"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
@@ -42,6 +44,8 @@ func defaultModelConfig(toggleDotFile, toggleFooter, firstUse bool,
 		helpMenu:        helpmenu.New(),
 		actionPalette:   palette.New(),
 		searchModal:     searchui.New(),
+		folderSizeModal: foldersize.New(),
+		gitDiffModal:    gitdiff.New(),
 		promptModal:     prompt.DefaultModel(prompt.PromptMinHeight, prompt.PromptMinWidth),
 		zoxideModal:     zoxideui.DefaultModel(zoxideui.ZoxideMinHeight, zoxideui.ZoxideMinWidth, zClient),
 		sortModal:       sortmodel.New(),

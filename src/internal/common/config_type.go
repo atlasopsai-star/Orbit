@@ -66,8 +66,10 @@ type ThemeType struct {
 type ConfigType struct {
 	Theme string `toml:"theme" comment:"More details are at https://github.com/atlasopsai-star/Orbit#configuration\nchange your theme"`
 
-	Editor    string `toml:"editor"     comment:"\nThe editor files will be opened with. (Leave blank to use the EDITOR environment variable)."`
-	DirEditor string `toml:"dir_editor" comment:"\nThe editor directories will be opened with. (Leave blank to use the default editors)."`
+	Editor            string `toml:"editor"             comment:"\nThe editor files will be opened with. (Leave blank to use the EDITOR environment variable)."`
+	DirEditor         string `toml:"dir_editor"          comment:"\nThe editor directories will be opened with. (Leave blank to use the default editors)."`
+	PreferredEditor   string `toml:"preferred_editor"    comment:"\nPreferred macOS editor app name for Orbit Actions (for example: Cursor, Zed, Visual Studio Code)."`
+	PreferredTerminal string `toml:"preferred_terminal"  comment:"\nPreferred macOS terminal app (terminal, iterm2, ghostty, or warp)."`
 	// The table (map) for editor by file extension
 	OpenWith map[string]string `toml:"open_with" comment:"\nCustom open commands by file extension."`
 

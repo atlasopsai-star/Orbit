@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"charm.land/lipgloss/v2"
 	"github.com/atlasopsai-star/Orbit/src/pkg/orbitfs"
 )
 
@@ -18,25 +19,39 @@ func TestSearchModalOpenClose(t *testing.T) {
 		t.Fatal("not closed")
 	}
 }
-func TestSearchModalIgnoresStaleResults(t *testing.T) {
+func TestSearchModalStreamsBatchesAndSelects(t *testing.T) {
 	m := New()
 	m.Open("/tmp/Orbit", orbitfs.FilenameSearch)
 	m.request = 2
-	m.Apply(ResultMsg{Request: 1, Results: []orbitfs.SearchResult{{Path: "/tmp/stale"}}})
+	m.Update(searchBatchMsg{Request: 1, Batch: orbitfs.SearchBatch{Results: []orbitfs.SearchResult{{Path: "/tmp/stale"}}}})
 	if len(m.results) != 0 {
-		t.Fatal("stale results applied")
+		t.Fatal("stale batch applied")
 	}
-	m.Apply(ResultMsg{Request: 2, Results: []orbitfs.SearchResult{{Path: "/tmp/fresh"}}})
-	if len(m.results) != 1 {
-		t.Fatal("fresh results missing")
+	m.Update(searchBatchMsg{Request: 2, Batch: orbitfs.SearchBatch{Results: []orbitfs.SearchResult{{Path: "/tmp/fresh"}}, Done: true}})
+	cmd := m.HandleKey("enter")
+	if cmd == nil || m.IsOpen() {
+		t.Fatal("enter did not select")
+	}
+	if msg := cmd().(SelectedMsg); msg.Path != "/tmp/fresh" {
+		t.Fatalf("selected=%#v", msg)
 	}
 }
-func TestSearchModalRendersContent(t *testing.T) {
+func TestSearchModalFitsNarrowDimensions(t *testing.T) {
+	m := New()
+	m.SetDimensions(20, 10)
+	m.Open("/tmp/Orbit", orbitfs.FilenameSearch)
+	if width := lipgloss.Width(m.View()); width > 20 {
+		t.Fatalf("search width=%d", width)
+	}
+}
+
+func TestSearchModalRendersContentAndTruncation(t *testing.T) {
 	m := New()
 	m.Open("/tmp/Orbit", orbitfs.ContentSearch)
 	m.Apply(ResultMsg{Request: m.request, Results: []orbitfs.SearchResult{{Path: "/tmp/Orbit/src/auth.go", Line: 42, Text: "authentication"}}})
+	m.truncated = true
 	view := m.View()
-	if !strings.Contains(view, "auth.go:42") || !strings.Contains(view, "authentication") {
-		t.Fatalf("view = %q", view)
+	if !strings.Contains(view, "auth.go:42") || !strings.Contains(view, "authentication") || !strings.Contains(view, "200+ matches") {
+		t.Fatalf("view=%q", view)
 	}
 }

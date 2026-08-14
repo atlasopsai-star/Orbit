@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"sync"
 
 	zoxidelib "github.com/lazysegtree/go-zoxide"
@@ -12,6 +13,9 @@ import (
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/filemodel"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/foldersize"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/gitdiff"
+	"github.com/atlasopsai-star/Orbit/src/pkg/gitstatus"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
@@ -65,6 +69,8 @@ type model struct {
 	notifyModel     notify.Model
 	actionPalette   palette.Model
 	searchModal     searchui.Model
+	folderSizeModal foldersize.Model
+	gitDiffModal    gitdiff.Model
 	typingModal     typingModal
 	helpMenu        helpmenu.Model
 	promptModal     prompt.Model
@@ -101,9 +107,16 @@ type model struct {
 	fullHeight   int
 
 	// whether usable trash directory exists or not
-	hasTrash         bool
-	orbitSizeCancel  func()
-	orbitSizeRequest uint64
+	hasTrash bool
+
+	// Async Git snapshot state. The checked flag distinguishes a scanned
+	// non-repository from a location that has not been requested yet.
+	gitStatus   gitstatus.Snapshot
+	gitLocation string
+	gitRequest  uint64
+	gitCancel   context.CancelFunc
+	gitChecked  bool
+	gitLoading  bool
 }
 
 type typingModal struct {
