@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
 
@@ -60,6 +62,10 @@ func (m *Model) ToggleFilePreviewPanel() tea.Cmd {
 }
 
 func (m *Model) UpdatePreviewPanel(msg preview.UpdateMsg) tea.Cmd {
+	if m.ioReqCnt == 0 || msg.GetReqID() != m.ioReqCnt-1 {
+		slog.Debug("FilePreviewUpdateMsg for older request. Ignoring", "msgID", msg.GetReqID(), "latestID", m.ioReqCnt-1)
+		return nil
+	}
 	selectedItem := m.GetFocusedFilePanel().GetFocusedItemPtr()
 	if selectedItem == nil {
 		slog.Debug("Panel empty or cursor invalid. Ignoring FilePreviewUpdateMsg")
@@ -137,4 +143,31 @@ func (m *Model) UpdateFilePanelsIfNeeded(force bool) {
 	for i := range m.FilePanels {
 		m.FilePanels[i].UpdateElementsIfNeeded(force, m.DisplayDotFiles)
 	}
+}
+
+// RefreshAffectedPaths reloads only panels whose visible directory intersects
+// a path changed by a completed filesystem operation.
+func (m *Model) RefreshAffectedPaths(paths []string) {
+	for i := range m.FilePanels {
+		for _, path := range paths {
+			if filePathsOverlap(m.FilePanels[i].Location, path) {
+				m.FilePanels[i].UpdateElementsIfNeeded(true, m.DisplayDotFiles)
+				break
+			}
+		}
+	}
+}
+
+func filePathsOverlap(left, right string) bool {
+	left = filepath.Clean(left)
+	right = filepath.Clean(right)
+	if left == right {
+		return true
+	}
+	leftToRight, err := filepath.Rel(left, right)
+	if err == nil && leftToRight != ".." && !strings.HasPrefix(leftToRight, ".."+string(filepath.Separator)) {
+		return true
+	}
+	rightToLeft, err := filepath.Rel(right, left)
+	return err == nil && rightToLeft != ".." && !strings.HasPrefix(rightToLeft, ".."+string(filepath.Separator))
 }

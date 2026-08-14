@@ -17,7 +17,12 @@ type ModelUpdateMessage interface {
 }
 
 type BaseMessage struct {
-	reqID int
+	reqID         int
+	affectedPaths []string
+}
+
+func copyAffectedPaths(paths []string) []string {
+	return append([]string(nil), paths...)
 }
 
 func (msg BaseMessage) GetReqID() int {
@@ -30,11 +35,12 @@ type PasteOperationMsg struct {
 	state processbar.ProcessState
 }
 
-func NewPasteOperationMsg(state processbar.ProcessState, reqID int) PasteOperationMsg {
+func NewPasteOperationMsg(state processbar.ProcessState, reqID int, affectedPaths ...string) PasteOperationMsg {
 	return PasteOperationMsg{
 		state: state,
 		BaseMessage: BaseMessage{
-			reqID: reqID,
+			reqID:         reqID,
+			affectedPaths: copyAffectedPaths(affectedPaths),
 		},
 	}
 }
@@ -43,7 +49,7 @@ func (msg PasteOperationMsg) ApplyToModel(m *model) tea.Cmd {
 	if (msg.state == processbar.Failed || msg.state == processbar.Successful) && m.clipboard.IsCut() {
 		m.clipboard.Reset(false)
 	}
-	return nil
+	return m.invalidateFileOperation(msg.affectedPaths)
 }
 
 type CreateOperationMsg struct {
@@ -52,17 +58,18 @@ type CreateOperationMsg struct {
 	state processbar.ProcessState
 }
 
-func NewCreateOperationMsg(state processbar.ProcessState, reqID int) CreateOperationMsg {
+func NewCreateOperationMsg(state processbar.ProcessState, reqID int, affectedPaths ...string) CreateOperationMsg {
 	return CreateOperationMsg{
 		state: state,
 		BaseMessage: BaseMessage{
-			reqID: reqID,
+			reqID:         reqID,
+			affectedPaths: copyAffectedPaths(affectedPaths),
 		},
 	}
 }
 
 func (msg CreateOperationMsg) ApplyToModel(m *model) tea.Cmd {
-	return nil
+	return m.invalidateFileOperation(msg.affectedPaths)
 }
 
 type DeleteOperationMsg struct {
@@ -71,11 +78,12 @@ type DeleteOperationMsg struct {
 	state processbar.ProcessState
 }
 
-func NewDeleteOperationMsg(state processbar.ProcessState, reqID int) DeleteOperationMsg {
+func NewDeleteOperationMsg(state processbar.ProcessState, reqID int, affectedPaths ...string) DeleteOperationMsg {
 	return DeleteOperationMsg{
 		state: state,
 		BaseMessage: BaseMessage{
-			reqID: reqID,
+			reqID:         reqID,
+			affectedPaths: copyAffectedPaths(affectedPaths),
 		},
 	}
 }
@@ -83,7 +91,7 @@ func NewDeleteOperationMsg(state processbar.ProcessState, reqID int) DeleteOpera
 func (msg DeleteOperationMsg) ApplyToModel(m *model) tea.Cmd {
 	// Remove selection
 	m.getFocusedFilePanel().ResetSelected()
-	return nil
+	return m.invalidateFileOperation(msg.affectedPaths)
 }
 
 type ProcessBarUpdateMsg struct {
@@ -106,17 +114,18 @@ type CompressOperationMsg struct {
 	state processbar.ProcessState
 }
 
-func NewCompressOperationMsg(state processbar.ProcessState, reqID int) CompressOperationMsg {
+func NewCompressOperationMsg(state processbar.ProcessState, reqID int, affectedPaths ...string) CompressOperationMsg {
 	return CompressOperationMsg{
 		state: state,
 		BaseMessage: BaseMessage{
-			reqID: reqID,
+			reqID:         reqID,
+			affectedPaths: copyAffectedPaths(affectedPaths),
 		},
 	}
 }
 
-func (msg CompressOperationMsg) ApplyToModel(_ *model) tea.Cmd {
-	return nil
+func (msg CompressOperationMsg) ApplyToModel(m *model) tea.Cmd {
+	return m.invalidateFileOperation(msg.affectedPaths)
 }
 
 type ExtractOperationMsg struct {
@@ -125,17 +134,18 @@ type ExtractOperationMsg struct {
 	state processbar.ProcessState
 }
 
-func NewExtractOperationMsg(state processbar.ProcessState, reqID int) ExtractOperationMsg {
+func NewExtractOperationMsg(state processbar.ProcessState, reqID int, affectedPaths ...string) ExtractOperationMsg {
 	return ExtractOperationMsg{
 		state: state,
 		BaseMessage: BaseMessage{
-			reqID: reqID,
+			reqID:         reqID,
+			affectedPaths: copyAffectedPaths(affectedPaths),
 		},
 	}
 }
 
-func (msg ExtractOperationMsg) ApplyToModel(_ *model) tea.Cmd {
-	return nil
+func (msg ExtractOperationMsg) ApplyToModel(m *model) tea.Cmd {
+	return m.invalidateFileOperation(msg.affectedPaths)
 }
 
 type MetadataMsg struct {

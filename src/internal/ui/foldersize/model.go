@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -66,6 +67,47 @@ func (m *Model) Open(path string, refresh bool) tea.Cmd {
 	m.cancel = cancel
 	stream := orbitfs.DirectorySizeStream(ctx, path)
 	return func() tea.Msg { return streamStartedMsg{Request: request, Stream: stream} }
+}
+
+// Invalidate removes cached measurements that overlap any changed path.
+// If the open modal is affected, immediately restart its scan so the visible
+// result cannot remain stale after a successful file operation.
+func (m *Model) Invalidate(paths ...string) tea.Cmd {
+	if len(paths) == 0 {
+		return nil
+	}
+
+	for cachedPath := range m.cache {
+		for _, path := range paths {
+			if pathsOverlap(cachedPath, path) {
+				delete(m.cache, cachedPath)
+				break
+			}
+		}
+	}
+
+	if m.open {
+		for _, path := range paths {
+			if pathsOverlap(m.path, path) {
+				return m.Open(m.path, true)
+			}
+		}
+	}
+	return nil
+}
+
+func pathsOverlap(left, right string) bool {
+	left = filepath.Clean(left)
+	right = filepath.Clean(right)
+	if left == right {
+		return true
+	}
+	leftToRight, err := filepath.Rel(left, right)
+	if err == nil && leftToRight != ".." && !strings.HasPrefix(leftToRight, ".."+string(filepath.Separator)) {
+		return true
+	}
+	rightToLeft, err := filepath.Rel(right, left)
+	return err == nil && rightToLeft != ".." && !strings.HasPrefix(rightToLeft, ".."+string(filepath.Separator))
 }
 
 func (m *Model) Close() {

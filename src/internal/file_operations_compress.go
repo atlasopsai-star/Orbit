@@ -77,9 +77,9 @@ func (m *model) getCompressSelectedFilesCmd() tea.Cmd {
 		}
 		if err := zipSources(filesToCompress, totalFiles, zipPath, &m.processBarModel); err != nil {
 			slog.Error("Error in zipping files", "error", err)
-			return NewCompressOperationMsg(processbar.Failed, reqID)
+			return NewCompressOperationMsg(processbar.Failed, reqID, append(append([]string{}, filesToCompress...), zipPath)...)
 		}
-		return NewCompressOperationMsg(processbar.Successful, reqID)
+		return NewCompressOperationMsg(processbar.Successful, reqID, append(append([]string{}, filesToCompress...), zipPath)...)
 	}
 }
 

@@ -295,7 +295,7 @@ func (m *model) handleNotifyModelConfirm(action notify.ConfirmActionType) tea.Cm
 	case notify.PermanentDeleteAction:
 		return m.getDeleteCmd(true)
 	case notify.RenameAction:
-		m.confirmRename()
+		return m.confirmRename()
 	case notify.QuitAction:
 		m.modelQuitState = quitConfirmationReceived
 	case notify.NoAction:
@@ -353,7 +353,7 @@ func (m *model) renamingKey(msg string) tea.Cmd {
 		if m.IsRenamingConflicting() {
 			return m.warnModalForRenaming()
 		}
-		m.confirmRename()
+		return m.confirmRename()
 	}
 
 	return nil

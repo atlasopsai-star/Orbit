@@ -71,15 +71,15 @@ func (m *model) createOperation(
 	reqID int,
 ) tea.Msg {
 	if len(items) == 0 {
-		return NewCreateOperationMsg(processbar.Cancelled, reqID)
+		return NewCreateOperationMsg(processbar.Cancelled, reqID, location)
 	}
 	p, err := processBarModel.SendAddProcessMsg(filepath.Base(items[0]), processbar.OpCreate, len(items), true)
 	if err != nil {
 		slog.Error("Cannot spawn a new process", "error", err)
-		return NewCreateOperationMsg(processbar.Failed, reqID)
+		return NewCreateOperationMsg(processbar.Failed, reqID, location)
 	}
 	finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
-		return NewCreateOperationMsg(state, reqID)
+		return NewCreateOperationMsg(state, reqID, location)
 	}
 	processor := makeCreateProcessor(location, p, processBarModel)
 	msg := m.runFileProcessor(processor, finalizer, items, reqID)
@@ -128,14 +128,14 @@ func (m *model) cancelRename() {
 }
 
 // Connfirm rename file or directory
-func (m *model) confirmRename() {
+func (m *model) confirmRename() tea.Cmd {
 	panel := m.getFocusedFilePanel()
 
 	// Although we dont expect this to happen based on our current flow
 	// Just adding it here to be safe
 	if panel.Empty() {
 		slog.Error("confirmRename called on empty panel")
-		return
+		return nil
 	}
 
 	oldPath := panel.GetFocusedItem().Location
@@ -145,11 +145,16 @@ func (m *model) confirmRename() {
 	err := os.Rename(oldPath, newPath)
 	if err != nil {
 		slog.Error("Error while confirmRename during rename", "error", err)
-		// Dont return. We have to also reset the panel and model information
+	} else {
+		m.fileModel.Renaming = false
+		panel.Rename.Blur()
+		panel.Renaming = false
+		return m.invalidateFileOperation([]string{oldPath, newPath})
 	}
 	m.fileModel.Renaming = false
 	panel.Rename.Blur()
 	panel.Renaming = false
+	return nil
 }
 
 func (m *model) confirmSortOptions() {

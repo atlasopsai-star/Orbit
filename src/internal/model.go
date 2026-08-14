@@ -147,6 +147,16 @@ func (m *model) updateModelStateAfterMsg() {
 	}
 }
 
+func (m *model) invalidateFileOperation(paths []string) tea.Cmd {
+	if len(paths) == 0 {
+		return nil
+	}
+	m.fileModel.RefreshAffectedPaths(paths)
+	m.sidebarModel.UpdateDirectories()
+	m.fileMetaData.ResetRender()
+	return tea.Batch(m.folderSizeModal.Invalidate(paths...), m.fileModel.GetFilePreviewCmd(true))
+}
+
 // Note : Maybe we should not trigger metadata fetch for updates
 // that dont change the currently selected file panel element
 // TODO : At least dont trigger metadata fetch when user is scrolling

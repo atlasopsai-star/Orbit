@@ -29,6 +29,38 @@ func TestOpenUsesSessionCacheUnlessRefreshed(t *testing.T) {
 	}
 }
 
+func TestInvalidateEvictsOverlappingCachedPaths(t *testing.T) {
+	m := New()
+	at := time.Now()
+	m.cache["/tmp/project"] = cacheEntry{At: at}
+	m.cache["/tmp/project/src"] = cacheEntry{At: at}
+	m.cache["/tmp/project/src/deeper"] = cacheEntry{At: at}
+	m.cache["/tmp/project/docs"] = cacheEntry{At: at}
+	m.cache["/tmp/projects"] = cacheEntry{At: at}
+
+	if cmd := m.Invalidate("/tmp/project/src/new.go"); cmd != nil {
+		t.Fatal("invalidate unexpectedly started a scan")
+	}
+
+	for _, path := range []string{"/tmp/project", "/tmp/project/src"} {
+		if _, ok := m.cache[path]; ok {
+			t.Fatalf("cache entry %q was not invalidated", path)
+		}
+	}
+	if _, ok := m.cache["/tmp/project/src/deeper"]; !ok {
+		t.Fatal("unrelated descendant cache entry was invalidated")
+	}
+	m.Invalidate("/tmp/project/src")
+	if _, ok := m.cache["/tmp/project/src/deeper"]; ok {
+		t.Fatal("descendant cache entry was not invalidated")
+	}
+	for _, path := range []string{"/tmp/project/docs", "/tmp/projects"} {
+		if _, ok := m.cache[path]; !ok {
+			t.Fatalf("unrelated cache entry %q was invalidated", path)
+		}
+	}
+}
+
 func TestFolderSizeFitsNarrowDimensions(t *testing.T) {
 	m := New()
 	m.SetDimensions(20, 10)

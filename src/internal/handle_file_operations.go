@@ -166,14 +166,16 @@ func (m *model) getDeleteCmd(permDelete bool) tea.Cmd {
 
 func (m *model) deleteOperation(processBarModel *processbar.Model, items []string, useTrash bool, reqID int) tea.Msg {
 	if len(items) == 0 {
-		return NewDeleteOperationMsg(processbar.Cancelled, reqID)
+		return NewDeleteOperationMsg(processbar.Cancelled, reqID, items...)
 	}
 	p, err := processBarModel.SendAddProcessMsg(filepath.Base(items[0]), processbar.OpDelete, len(items), true)
 	if err != nil {
 		slog.Error("Cannot spawn a new process", "error", err)
-		return NewDeleteOperationMsg(processbar.Failed, reqID)
+		return NewDeleteOperationMsg(processbar.Failed, reqID, items...)
 	}
-	finalizer := func(state processbar.ProcessState, reqID int) tea.Msg { return NewDeleteOperationMsg(state, reqID) }
+	finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+		return NewDeleteOperationMsg(state, reqID, items...)
+	}
 	processor := makeDeleteProcessor(p, processBarModel, useTrash)
 	msg := m.runFileProcessor(processor, finalizer, items, reqID)
 	return msg
@@ -362,7 +364,7 @@ func (m *model) executePasteOperation(processBarModel *processbar.Model,
 	panelLocation string, items []string, cut bool, reqID int,
 ) tea.Msg {
 	if len(items) == 0 {
-		return NewPasteOperationMsg(processbar.Cancelled, reqID)
+		return NewPasteOperationMsg(processbar.Cancelled, reqID, append(append([]string{}, items...), panelLocation)...)
 	}
 	var operation processbar.OperationType
 	if cut {
@@ -377,9 +379,11 @@ func (m *model) executePasteOperation(processBarModel *processbar.Model,
 		getTotalFilesCnt(items), true)
 	if err != nil {
 		slog.Error("Cannot spawn a new process", "error", err)
-		return NewPasteOperationMsg(processbar.Failed, reqID)
+		return NewPasteOperationMsg(processbar.Failed, reqID, append(append([]string{}, items...), panelLocation)...)
 	}
-	finalizer := func(state processbar.ProcessState, reqId int) tea.Msg { return NewPasteOperationMsg(state, reqId) }
+	finalizer := func(state processbar.ProcessState, reqId int) tea.Msg {
+		return NewPasteOperationMsg(state, reqId, append(append([]string{}, items...), panelLocation)...)
+	}
 	processor := makePasteProcessor(p, processBarModel, panelLocation, cut)
 	msg := m.runFileProcessor(processor, finalizer, items, reqID)
 	return msg
@@ -434,7 +438,7 @@ func (m *model) getExtractFileCmd() tea.Cmd {
 		outputDir, err := renameIfDuplicate(outputDir)
 		if err != nil {
 			slog.Error("Error while renaming for duplicates", "error", err)
-			return NewExtractOperationMsg(processbar.Failed, reqID)
+			return NewExtractOperationMsg(processbar.Failed, reqID, item, outputDir)
 		}
 
 		err = os.MkdirAll(
@@ -443,14 +447,14 @@ func (m *model) getExtractFileCmd() tea.Cmd {
 		)
 		if err != nil {
 			slog.Error("Error while making directory for extracting files", "error", err)
-			return NewExtractOperationMsg(processbar.Failed, reqID)
+			return NewExtractOperationMsg(processbar.Failed, reqID, item, outputDir)
 		}
 		err = extractCompressFile(item, outputDir, &m.processBarModel)
 		if err != nil {
 			slog.Error("Error extract file", "error", err)
-			return NewExtractOperationMsg(processbar.Failed, reqID)
+			return NewExtractOperationMsg(processbar.Failed, reqID, item, outputDir)
 		}
-		return NewExtractOperationMsg(processbar.Successful, reqID)
+		return NewExtractOperationMsg(processbar.Successful, reqID, item, outputDir)
 	}
 }
 
