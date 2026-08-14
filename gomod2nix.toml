@@ -237,6 +237,10 @@ schema = 3
     version = 'v0.0.0-20190401172101-9e8deecbddbd'
     hash = 'sha256-AiY2T9hXj6jnfldYDoe4WNr3FldpVTxc3lScR++HOLc='
 
+  [mod.'github.com/sabhiram/go-gitignore']
+    version = 'v0.0.0-20210923224102-525f6e181f06'
+    hash = 'sha256-A1aJFlcPRQvDqdJmEwpzhftR8C1Kzv1hXPszq8eO76Q='
+
   [mod.'github.com/saintfish/chardet']
     version = 'v0.0.0-20230101081208-5e3ef4b5456d'
     hash = 'sha256-JXlHMCbXB8iRQ9wQBGCeTjDSfgaBwUVOpvcjj0iVn5A='
