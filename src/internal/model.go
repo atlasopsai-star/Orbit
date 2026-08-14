@@ -22,7 +22,9 @@ import (
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/palette"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/preview"
+	searchui "github.com/atlasopsai-star/Orbit/src/internal/ui/search"
 
 	variable "github.com/atlasopsai-star/Orbit/src/config"
 	zoxideui "github.com/atlasopsai-star/Orbit/src/internal/ui/zoxide"
@@ -91,6 +93,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case preview.UpdateMsg:
 		slog.Debug("Got ModelUpdate message", "id", msg.GetReqID())
 		updateCmd = m.fileModel.UpdatePreviewPanel(msg)
+	case palette.ActionSelectedMsg:
+		updateCmd = m.executeOrbitAction(msg.ID)
+	case searchui.ResultMsg:
+		m.searchModal.Apply(msg)
 	case ModelUpdateMessage:
 		slog.Debug("Got ModelUpdate message", "id", msg.GetReqID())
 		updateCmd = msg.ApplyToModel(m)
@@ -294,6 +300,10 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 	var cmd tea.Cmd
 	cdOnQuit := common.Config.CdOnQuit
 	switch {
+	case m.actionPalette.IsOpen():
+		cmd = m.actionPalette.HandleKey(msg.String())
+	case m.searchModal.IsOpen():
+		cmd = m.searchModal.HandleKey(msg.String())
 	case m.spfError.IsOpen():
 		cmd = m.spfErrorModelOpenKey(msg.String())
 	case m.typingModal.open:
@@ -328,6 +338,10 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 		m.helpMenu.HandleKey(msg.String())
 
 	case slices.Contains(common.Hotkeys.Quit, msg.String()):
+		if m.orbitSizeCancel != nil {
+			m.orbitSizeCancel()
+			m.orbitSizeCancel = nil
+		}
 		m.modelQuitState = quitInitiated
 
 	case slices.Contains(common.Hotkeys.CdQuit, msg.String()):
@@ -364,6 +378,10 @@ func (m *model) updateComponentState(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 	var action common.ModelAction
 	switch {
+	case m.actionPalette.IsOpen():
+		cmd = m.actionPalette.Update(msg)
+	case m.searchModal.IsOpen():
+		cmd = m.searchModal.Update(msg)
 	case m.firstTextInput:
 		m.firstTextInput = false
 	case m.fileModel.Renaming:
@@ -535,7 +553,23 @@ func (m *model) viewContent() string {
 }
 
 func (m *model) updateRenderForOverlay(finalRender string) string {
+	if m.actionPalette.IsOpen() {
+		m.actionPalette.SetDimensions(maxOrbit(56, m.fullWidth-8), maxOrbit(16, m.fullHeight-4))
+		overlay := m.actionPalette.View()
+		overlayX := m.fullWidth/common.CenterDivisor - lipgloss.Width(overlay)/common.CenterDivisor
+		overlayY := m.fullHeight/common.CenterDivisor - strings.Count(overlay, "\n")/common.CenterDivisor
+		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+	}
+
 	// check if need pop up modal
+	if m.searchModal.IsOpen() {
+		m.searchModal.SetDimensions(minOrbit(72, maxOrbit(20, m.fullWidth-4)), minOrbit(24, maxOrbit(10, m.fullHeight-2)))
+		overlay := m.searchModal.View()
+		overlayX := m.fullWidth/common.CenterDivisor - lipgloss.Width(overlay)/common.CenterDivisor
+		overlayY := m.fullHeight/common.CenterDivisor - strings.Count(overlay, "\n")/common.CenterDivisor
+		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+	}
+
 	if m.spfError.IsOpen() {
 		errorModal := m.spfError.Render()
 		overlayX := m.fullWidth/common.CenterDivisor - common.ModalWidth/common.CenterDivisor

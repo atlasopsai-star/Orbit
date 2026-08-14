@@ -15,7 +15,9 @@ import (
 
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
+	"github.com/atlasopsai-star/Orbit/src/internal/ui/palette"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
+	searchui "github.com/atlasopsai-star/Orbit/src/internal/ui/search"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/sidebar"
 
 	"charm.land/bubbles/v2/textinput"
@@ -61,6 +63,8 @@ type model struct {
 
 	// Modals
 	notifyModel     notify.Model
+	actionPalette   palette.Model
+	searchModal     searchui.Model
 	typingModal     typingModal
 	helpMenu        helpmenu.Model
 	promptModal     prompt.Model
@@ -97,7 +101,9 @@ type model struct {
 	fullHeight   int
 
 	// whether usable trash directory exists or not
-	hasTrash bool
+	hasTrash         bool
+	orbitSizeCancel  func()
+	orbitSizeRequest uint64
 }
 
 type typingModal struct {

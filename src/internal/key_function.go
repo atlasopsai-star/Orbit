@@ -133,6 +133,9 @@ func (m *model) mainKey(msg string) tea.Cmd { //nolint: gocyclo,cyclop,funlen,go
 	case slices.Contains(common.Hotkeys.CompressFile, msg):
 		return m.getCompressSelectedFilesCmd()
 
+	case slices.Contains(common.Hotkeys.OpenCommandPalette, msg) || (len(common.Hotkeys.OpenCommandPalette) == 0 && msg == "ctrl+k"):
+		return m.openOrbitActionPalette()
+
 	case slices.Contains(common.Hotkeys.OpenCommandLine, msg):
 		m.promptModal.Open(true)
 	case slices.Contains(common.Hotkeys.OpenSPFPrompt, msg):
