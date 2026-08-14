@@ -100,6 +100,10 @@ type ConfigType struct {
 	SidebarWidth            int      `toml:"sidebar_width"              comment:"\nThe length of the sidebar(excluding borders). If you don't find to display the sidebar, you can input 0 directly. If you want to display the value, please place it in the range of 5-20."`
 	SidebarSections         []string `toml:"sidebar_sections"           comment:"\nOrder of sidebar sections (valid values: \"home\", \"pinned\", \"disks\").\nOnly sections included in this list will be displayed."`
 
+	// Roots searched by Orbit Lookup (Ctrl+F) in addition to the home
+	// directory. Paths may use "~". External drives live under /Volumes.
+	LookupRoots []string `toml:"lookup_roots" comment:"\nExtra roots Orbit Lookup (Ctrl+F) searches in addition to the home directory. Paths may use ~."`
+
 	BorderTop         string `toml:"border_top"          comment:"\nBorder style"`
 	BorderBottom      string `toml:"border_bottom"`
 	BorderLeft        string `toml:"border_left"`
@@ -168,6 +172,7 @@ type HotkeysType struct {
 	OpenSPFPrompt      []string `toml:"open_spf_prompt"`
 	OpenZoxide         []string `toml:"open_zoxide"`
 	OpenCommandPalette []string `toml:"open_command_palette"`
+	OpenLookup         []string `toml:"open_lookup"`
 
 	CopyPath []string `toml:"copy_path"`
 	CopyPWD  []string `toml:"copy_present_working_directory"`

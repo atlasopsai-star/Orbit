@@ -147,6 +147,8 @@ func (m *model) executeOrbitAction(id string) tea.Cmd {
 		return m.searchModal.Open(directory, orbitfs.FilenameSearch)
 	case "search-content":
 		return m.searchModal.Open(directory, orbitfs.ContentSearch)
+	case "lookup":
+		return m.openLookup()
 	}
 	return nil
 }

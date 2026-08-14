@@ -68,6 +68,7 @@ open_help_menu = ['?', '']
 open_spf_prompt = ['>', '']
 open_zoxide = ['z', '']
 open_command_palette = ['ctrl+k', '']
+open_lookup = ['ctrl+f', '']
 toggle_dot_file = ['.', '']
 toggle_footer = ['F', '']
 

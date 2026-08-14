@@ -20,6 +20,7 @@ import (
 	"github.com/barasher/go-exiftool"
 
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/filepanel"
+	lookupui "github.com/atlasopsai-star/Orbit/src/internal/ui/lookup"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/palette"
@@ -53,9 +54,11 @@ func InitialModel(firstPanelPaths []string, firstUseCheck bool) tea.Model {
 // disk, is being done in at the creation of model of object. Right now creation of model object
 // and its initialization isn't well separated.
 func (m *model) Init() tea.Cmd {
+	m.splashStart = time.Now()
 	return tea.Batch(
 		textinput.Blink, // Assuming textinput.Blink is a valid command
 		processCmdToTeaCmd(m.processBarModel.GetListenCmd()),
+		m.splashTickCmd(),
 	)
 }
 
@@ -83,6 +86,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.handleMouseMsg(msg)
 	case tea.KeyPressMsg:
 		inputCmd = m.handleKeyInput(msg)
+	case splashTickMsg:
+		if time.Since(m.splashStart) < splashMinDuration {
+			resizeCmd = m.splashTickCmd()
+		} else {
+			m.splashDone = true
+		}
 
 	// Has to handle zoxide messages separately as they could be generated via
 	// zoxide update commands, or batched commands from textinput
@@ -101,6 +110,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.searchModal.Apply(msg)
 	case searchui.SelectedMsg:
 		updateCmd = m.navigateToSearchResult(msg)
+	case lookupui.NavigateMsg:
+		updateCmd = m.navigateToLookupResult(msg)
+	case lookupui.QuickActionMsg:
+		updateCmd = m.handleLookupQuickAction(msg)
 	case gitStatusMsg:
 		m.applyGitStatus(msg)
 	case navigateToDirMsg:
@@ -301,6 +314,10 @@ func (m *model) setFooterComponentSize() {
 // Identify the current state of the application m and properly handle the
 // msg keybind pressed
 func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
+	// Any keypress skips the splash early.
+	if !m.splashDone {
+		m.splashDone = true
+	}
 	slog.Debug("model.handleKeyInput", "msg", msg, "typestr", msg.String(),
 		"code", msg.Code, "text", msg.Text, "mod", msg.Mod)
 	slog.Debug("model.handleKeyInput. model info. ",
@@ -325,6 +342,8 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 	switch {
 	case m.actionPalette.IsOpen():
 		cmd = m.actionPalette.HandleKey(msg.String())
+	case m.lookupModal.IsOpen():
+		cmd = m.lookupModal.HandleKey(msg.String())
 	case m.searchModal.IsOpen():
 		cmd = m.searchModal.HandleKey(msg.String())
 	case m.folderSizeModal.IsOpen():
@@ -411,6 +430,8 @@ func (m *model) updateComponentState(msg tea.Msg) tea.Cmd {
 	switch {
 	case m.actionPalette.IsOpen():
 		cmd = m.actionPalette.Update(msg)
+	case m.lookupModal.IsOpen():
+		cmd = m.lookupModal.Update(msg)
 	case m.searchModal.IsOpen():
 		cmd = m.searchModal.Update(msg)
 	case m.folderSizeModal.IsOpen():
@@ -568,6 +589,11 @@ func (m *model) View() tea.View {
 }
 
 func (m *model) viewContent() string {
+	// The shimmering ORBIT intro plays for a fixed minimum duration (or until
+	// the first keypress) while the workspace loads underneath.
+	if !m.splashDone {
+		return m.splashRender()
+	}
 	if !m.firstLoadingComplete {
 		return "Loading..."
 	}
@@ -575,7 +601,7 @@ func (m *model) viewContent() string {
 	// Keep the file browser honest at very small sizes, but still allow the
 	// keyboard-first overlays to operate in a compact layout.
 	if m.fullHeight < common.MinimumHeight || m.fullWidth < common.MinimumWidth {
-		if m.actionPalette.IsOpen() || m.searchModal.IsOpen() || m.folderSizeModal.IsOpen() || m.gitDiffModal.IsOpen() {
+		if m.actionPalette.IsOpen() || m.lookupModal.IsOpen() || m.searchModal.IsOpen() || m.folderSizeModal.IsOpen() || m.gitDiffModal.IsOpen() {
 			return m.updateRenderForOverlay(m.compactOverlayBackground())
 		}
 		return m.terminalSizeWarnRender()
@@ -597,6 +623,15 @@ func (m *model) updateRenderForOverlay(finalRender string) string {
 	if m.actionPalette.IsOpen() {
 		m.actionPalette.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(24, maxOrbit(8, m.fullHeight-2)))
 		overlay := m.actionPalette.View()
+		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
+		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\n")/common.CenterDivisor)
+		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+	}
+
+	// Orbit Lookup gets a larger overlay so the results + preview panes fit.
+	if m.lookupModal.IsOpen() {
+		m.lookupModal.SetDimensions(minOrbit(160, maxOrbit(40, m.fullWidth-2)), minOrbit(44, maxOrbit(10, m.fullHeight-2)))
+		overlay := m.lookupModal.View()
 		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
 		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\n")/common.CenterDivisor)
 		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)

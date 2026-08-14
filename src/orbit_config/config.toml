@@ -179,6 +179,12 @@ enable_md5_checksum = false
 # Requires: zoxide
 zoxide_support = false
 
+#-- Orbit Lookup
+# Extra root directories searched by Orbit Lookup (Ctrl+F), in addition to
+# your home directory. Paths may use ~. External drives live under /Volumes.
+# Example: lookup_roots = ["~/Developer", "~/Documents", "/Volumes/AtlasDrive/Atlas"]
+lookup_roots = []
+
 #-- File opening rules
 # Map file extensions to commands used to open them.
 # The file path will be appended as the last argument.

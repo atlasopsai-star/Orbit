@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"sync"
+	"time"
 
 	zoxidelib "github.com/lazysegtree/go-zoxide"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/gitdiff"
 	"github.com/atlasopsai-star/Orbit/src/pkg/gitstatus"
 
+	lookupui "github.com/atlasopsai-star/Orbit/src/internal/ui/lookup"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/notify"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/palette"
@@ -74,6 +76,7 @@ type model struct {
 	notifyModel     notify.Model
 	actionPalette   palette.Model
 	searchModal     searchui.Model
+	lookupModal     lookupui.Model
 	folderSizeModal foldersize.Model
 	gitDiffModal    gitdiff.Model
 	typingModal     typingModal
@@ -97,6 +100,11 @@ type model struct {
 	toggleFooter         bool
 	firstLoadingComplete bool
 	firstUse             bool
+
+	// Premium startup splash: the shimmering ORBIT intro holds for a fixed
+	// minimum duration (or until the first keypress) before the TUI appears.
+	splashStart time.Time
+	splashDone  bool
 
 	// This entirely disables metadata fetching. Used in test model
 	disableMetadata bool

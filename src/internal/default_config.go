@@ -14,6 +14,7 @@ import (
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/sortmodel"
 
 	clipboardui "github.com/atlasopsai-star/Orbit/src/internal/ui/clipboard"
+	lookupui "github.com/atlasopsai-star/Orbit/src/internal/ui/lookup"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/metadata"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/palette"
 	"github.com/atlasopsai-star/Orbit/src/internal/ui/processbar"
@@ -48,6 +49,7 @@ func defaultModelConfig(toggleDotFile, toggleFooter, firstUse bool,
 		helpMenu:        helpmenu.New(),
 		actionPalette:   palette.New(),
 		searchModal:     searchui.New(),
+		lookupModal:     lookupui.New(),
 		folderSizeModal: foldersize.New(),
 		gitDiffModal:    gitdiff.New(),
 		promptModal:     prompt.DefaultModel(prompt.PromptMinHeight, prompt.PromptMinWidth),

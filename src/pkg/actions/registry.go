@@ -52,6 +52,7 @@ func all(ctx Context) []Action {
 		{ID: "search-files", Label: "Search Current Directory", Description: "Filter the current directory by filename", Category: "Search", Keywords: []string{"find"}, Available: func(Context) bool { return ctx.CurrentDirectory != "" }},
 		{ID: "search-recursive", Label: "Search Descendants", Description: "Search descendant filenames", Category: "Search", Keywords: []string{"find", "recursive"}, Available: func(Context) bool { return ctx.CurrentDirectory != "" }},
 		{ID: "search-content", Label: "Search File Contents", Description: "Search text inside descendant files", Category: "Search", Keywords: []string{"grep", "content", "text"}, Available: func(Context) bool { return ctx.CurrentDirectory != "" }},
+		{ID: "lookup", Label: "File & Folder Lookup", Description: "Find files and folders anywhere on this Mac", Category: "Search", Keywords: []string{"find", "lookup", "global", "everywhere", "spotlight"}, Available: func(Context) bool { return true }},
 	}
 }
 

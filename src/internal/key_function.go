@@ -135,6 +135,8 @@ func (m *model) mainKey(msg string) tea.Cmd { //nolint: gocyclo,cyclop,funlen,go
 
 	case slices.Contains(common.Hotkeys.OpenCommandPalette, msg) || (len(common.Hotkeys.OpenCommandPalette) == 0 && msg == "ctrl+k"):
 		return m.openOrbitActionPalette()
+	case slices.Contains(common.Hotkeys.OpenLookup, msg) || (len(common.Hotkeys.OpenLookup) == 0 && msg == "ctrl+f"):
+		return m.openLookup()
 
 	case slices.Contains(common.Hotkeys.OpenCommandLine, msg):
 		m.promptModal.Open(true)
