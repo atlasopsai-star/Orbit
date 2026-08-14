@@ -124,7 +124,7 @@ func TestFileCreation(t *testing.T) {
 				_, err := os.Lstat(targetFile)
 				return err == nil
 			}, DefaultTestTimeout, DefaultTestTick, "Target file did not get created : %q", targetFile)
-			assert.False(t, m.spfError.IsOpen(), "Unexpected SPF error for input: %q", tt.fileName)
+			assert.False(t, m.spfErrorIsOpen(), "Unexpected SPF error for input: %q", tt.fileName)
 		})
 	}
 
@@ -298,7 +298,7 @@ func TestFileDelete(t *testing.T) {
 			} else {
 				p.SendKey(common.Hotkeys.DeleteItems[0])
 			}
-			assert.Eventually(t, m.notifyModel.IsOpen, DefaultTestTimeout,
+			assert.Eventually(t, m.notifyModelIsOpen, DefaultTestTimeout,
 				DefaultTestTick, "Notify model never opened")
 			expectedTitle := common.TrashWarnTitle
 			expectedAction := notify.DeleteAction
@@ -306,8 +306,9 @@ func TestFileDelete(t *testing.T) {
 				expectedTitle = common.PermanentDeleteWarnTitle
 				expectedAction = notify.PermanentDeleteAction
 			}
-			assert.Equal(t, expectedTitle, m.notifyModel.GetTitle())
-			assert.Equal(t, expectedAction, m.notifyModel.GetConfirmAction())
+			notifyModel := m.getNotifyModel()
+			assert.Equal(t, expectedTitle, notifyModel.GetTitle())
+			assert.Equal(t, expectedAction, notifyModel.GetConfirmAction())
 
 			p.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 

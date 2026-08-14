@@ -73,8 +73,12 @@ func (m *model) validateLayout() error { //nolint:gocognit // cumilation of vali
 		totalFileModelWidth += m.fileModel.ExpectedPreviewWidth
 	}
 
-	// Check each file panel has correct dimensions set
-	for i, panel := range m.fileModel.FilePanels {
+	// Check each file panel has correct dimensions set. Index into the slice and
+	// go through the panel's own locked accessors: a range copy would read the
+	// whole panel struct (cursor, render index, elements) outside the panel
+	// mutex and race with panel mutations made on other goroutines.
+	for i := range m.fileModel.FilePanels {
+		panel := &m.fileModel.FilePanels[i]
 		totalFileModelWidth += panel.GetWidth()
 		if panel.GetHeight() != m.fileModel.Height {
 			return fmt.Errorf(

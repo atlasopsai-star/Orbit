@@ -5,6 +5,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"compress/gzip"
+	"encoding/binary"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -96,19 +97,93 @@ func renderArchivePreview(r *rendering.Renderer, itemPath string, previewHeight 
 	}
 }
 
+// zipEntryCount reports the number of entries in a ZIP archive by reading only
+// the end-of-central-directory records from the file tail. It never parses the
+// central directory, so archives with a huge entry list (or a crafted central
+// directory) cannot make the preview allocate one header object per entry.
+func zipEntryCount(path string) (int, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil {
+		return 0, err
+	}
+	size := info.Size()
+	if size < 22 {
+		return 0, zip.ErrFormat
+	}
+	tailSize := int64(22 + 65535)
+	if tailSize > size {
+		tailSize = size
+	}
+	tail := make([]byte, tailSize)
+	if _, err := file.ReadAt(tail, size-tailSize); err != nil {
+		return 0, err
+	}
+	// Scan backwards for the EOCD signature; the record is valid only when its
+	// comment length exactly fills the remaining tail bytes.
+	for index := len(tail) - 22; index >= 0; index-- {
+		if binary.LittleEndian.Uint32(tail[index:]) != 0x06054b50 {
+			continue
+		}
+		if int(binary.LittleEndian.Uint16(tail[index+20:])) != len(tail)-index-22 {
+			continue
+		}
+		count := int(binary.LittleEndian.Uint16(tail[index+10:]))
+		if count != 0xffff {
+			return count, nil
+		}
+		// zip64: a locator record sits directly before the EOCD and points at
+		// the 56-byte zip64 EOCD record holding the real entry count.
+		if index >= 20 && binary.LittleEndian.Uint32(tail[index-20:]) == 0x07064b50 {
+			offset := int64(binary.LittleEndian.Uint64(tail[index-12:]))
+			if offset < 0 || offset+56 > size {
+				return 0, zip.ErrFormat
+			}
+			record := make([]byte, 56)
+			if _, err := file.ReadAt(record, offset); err != nil {
+				return 0, err
+			}
+			if binary.LittleEndian.Uint32(record) != 0x06064b50 {
+				return 0, zip.ErrFormat
+			}
+			total := binary.LittleEndian.Uint64(record[32:])
+			if total > uint64(^uint(0)>>1) {
+				return 0, zip.ErrFormat
+			}
+			return int(total), nil
+		}
+		return 0, zip.ErrFormat
+	}
+	return 0, zip.ErrFormat
+}
+
 func renderZipPreview(r *rendering.Renderer, itemPath string, previewHeight int) string {
+	info, _ := os.Stat(itemPath)
+	size := "unknown size"
+	if info != nil {
+		size = common.FormatFileSize(info.Size())
+	}
+
+	// Bounded entry listing: when the archive declares more entries than we are
+	// willing to materialize as header objects, show the real count from the
+	// EOCD and skip opening the central directory entirely.
+	entryCount, countErr := zipEntryCount(itemPath)
+	if countErr == nil && entryCount > maxArchivePreviewEntries {
+		r.AddLines(fmt.Sprintf("ZIP  %s  %d entries", size, entryCount))
+		r.AddLines(fmt.Sprintf("listing capped at %d entries", maxArchivePreviewEntries))
+		return r.Render()
+	}
+
 	archive, err := zip.OpenReader(itemPath)
 	if err != nil {
 		return r.AddLines(fmt.Sprintf("Archive preview unavailable: %v", err)).Render()
 	}
 	defer archive.Close()
 
-	info, _ := os.Stat(itemPath)
-	size := "unknown size"
-	if info != nil {
-		size = common.FormatFileSize(info.Size())
-	}
-	entryCount := len(archive.File)
 	entrySuffix := ""
 	if entryCount > maxArchivePreviewEntries {
 		entryCount = maxArchivePreviewEntries

@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	CurrentVersion = "v1.6.0"
+	CurrentVersion = "0.1.0"
 	// Allowing pre-releases with non production version
 	// Set this to "" for production releases
-	PreReleaseSuffix = ""
+	PreReleaseSuffix = "-rc1"
 	// OrbitReleasesAvailable stays false until the first Orbit release is published.
 	// This prevents inherited configurations from contacting a non-existent release stream.
 	OrbitReleasesAvailable = false
