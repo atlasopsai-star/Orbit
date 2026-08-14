@@ -80,6 +80,10 @@ func (m *model) handleLookupQuickAction(msg lookupui.QuickActionMsg) tea.Cmd {
 		ctx.SelectedPath = msg.Path
 		ctx.CurrentDirectory = parent
 		ctx.IsDirectory = isDir
+		// The palette replaces Lookup: close the modal so actions that open
+		// further modals (folder size, trash confirm, …) render and receive
+		// keys instead of stacking underneath the still-open Lookup overlay.
+		m.lookupModal.Close()
 		m.actionPalette.SetActions(actions.Default(ctx))
 		m.actionPalette.SetDimensions(minOrbit(72, maxOrbit(8, m.fullWidth-2)), minOrbit(24, maxOrbit(8, m.fullHeight-2)))
 		return m.actionPalette.Open()

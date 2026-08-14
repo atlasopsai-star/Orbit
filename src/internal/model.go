@@ -342,6 +342,13 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 	switch {
 	case m.actionPalette.IsOpen():
 		cmd = m.actionPalette.HandleKey(msg.String())
+	case m.spfError.IsOpen():
+		cmd = m.spfErrorModelOpenKey(msg.String())
+	// A notify toast opened by a Lookup quick action gets keys before the
+	// Lookup modal so it can be dismissed (Enter/Esc) instead of being stuck
+	// underneath the still-open overlay. The error modal stays above it.
+	case m.notifyModel.IsOpen():
+		cmd = m.notifyModelOpenKey(msg.String())
 	case m.lookupModal.IsOpen():
 		cmd = m.lookupModal.HandleKey(msg.String())
 	case m.searchModal.IsOpen():
@@ -350,8 +357,6 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 		cmd = m.folderSizeModal.HandleKey(msg.String())
 	case m.gitDiffModal.IsOpen():
 		cmd = m.gitDiffModal.HandleKey(msg.String())
-	case m.spfError.IsOpen():
-		cmd = m.spfErrorModelOpenKey(msg.String())
 	case m.typingModal.open:
 		cmd = m.typingModalOpenKey(msg.String())
 	case m.promptModal.IsOpen():
@@ -361,10 +366,6 @@ func (m *model) handleKeyInput(msg tea.KeyPressMsg) tea.Cmd {
 	case m.zoxideModal.IsOpen():
 		// Ignore keypress. It will be handled in Update call via
 		// updateFilePanelState
-
-	// Handles all warn models except the warn model for confirming to quit
-	case m.notifyModel.IsOpen():
-		cmd = m.notifyModelOpenKey(msg.String())
 
 	// If renaming a object
 	case m.fileModel.Renaming:
@@ -634,7 +635,16 @@ func (m *model) updateRenderForOverlay(finalRender string) string {
 		overlay := m.lookupModal.View()
 		overlayX := maxOrbit(0, m.fullWidth/common.CenterDivisor-lipgloss.Width(overlay)/common.CenterDivisor)
 		overlayY := maxOrbit(0, m.fullHeight/common.CenterDivisor-strings.Count(overlay, "\n")/common.CenterDivisor)
-		return stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+		lookupRender := stringfunction.PlaceOverlay(overlayX, overlayY, overlay, finalRender)
+		// Quick-action feedback (Path copied, Revealed in Finder, …) renders as
+		// a toast on top of Lookup instead of being hidden underneath it.
+		if m.notifyModel.IsOpen() {
+			notifyModal := m.notifyModel.Render()
+			notifyX := m.fullWidth/common.CenterDivisor - common.ModalWidth/common.CenterDivisor
+			notifyY := m.fullHeight/common.CenterDivisor - common.ModalHeight/common.CenterDivisor
+			return stringfunction.PlaceOverlay(notifyX, notifyY, notifyModal, lookupRender)
+		}
+		return lookupRender
 	}
 
 	// check if need pop up modal
